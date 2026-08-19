@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Principal{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-0">Panel de Control</h2>
+        <p class="text-muted mb-0">Resumen administrativo de la colonia residencial</p>
+    </div>
+    <div>
+        <span class="badge bg-success p-2"><i class="bi bi-shield-check me-1"></i>Sistema Operativo</span>
+    </div>
+</div>
+
+<!-- Tarjetas de Métricas (KPIs) -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4 col-sm-6">
+        <div class="card shadow-sm border-0 border-start border-primary border-4 h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted fw-semibold mb-1">Total Casas</h6>
+                        <h3 class="fw-bold mb-0 text-primary">{{ total_casas }}</h3>
+                    </div>
+                    <div class="bg-primary-subtle text-primary p-3 rounded-circle">
+                        <i class="bi bi-house-door-fill fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 col-sm-6">
+        <div class="card shadow-sm border-0 border-start border-success border-4 h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted fw-semibold mb-1">Vecinos Registrados</h6>
+                        <h3 class="fw-bold mb-0 text-success">{{ total_vecinos }}</h3>
+                    </div>
+                    <div class="bg-success-subtle text-success p-3 rounded-circle">
+                        <i class="bi bi-people-fill fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 col-sm-6">
+        <div class="card shadow-sm border-0 border-start border-info border-4 h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted fw-semibold mb-1">Familias</h6>
+                        <h3 class="fw-bold mb-0 text-info">{{ total_familias }}</h3>
+                    </div>
+                    <div class="bg-info-subtle text-info p-3 rounded-circle">
+                        <i class="bi bi-diagram-3-fill fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-sm-6">
+        <div class="card shadow-sm border-0 border-start border-warning border-4 h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted fw-semibold mb-1">Deudas Pendientes</h6>
+                        <h3 class="fw-bold mb-0 text-warning">{{ deudas_pendientes }}</h3>
+                    </div>
+                    <div class="bg-warning-subtle text-warning p-3 rounded-circle">
+                        <i class="bi bi-cash-stack fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-sm-6">
+        <div class="card shadow-sm border-0 border-start border-danger border-4 h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted fw-semibold mb-1">Multas Pendientes</h6>
+                        <h3 class="fw-bold mb-0 text-danger">{{ multas_pendientes }}</h3>
+                    </div>
+                    <div class="bg-danger-subtle text-danger p-3 rounded-circle">
+                        <i class="bi bi-exclamation-octagon-fill fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Accesos Rápidos -->
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-white py-3">
+        <h5 class="mb-0 fw-bold"><i class="bi bi-lightning-charge-fill text-warning me-2"></i>Accesos Rápidos</h5>
+    </div>
+    <div class="card-body">
+        <div class="row g-2">
+            <div class="col-md-3 col-6">
+                <a href="#" class="btn btn-outline-primary w-100 py-3 text-center">
+                    <i class="bi bi-plus-circle d-block fs-3 mb-1"></i>
+                    <span>Registrar Casa</span>
+                </a>
+            </div>
+            <div class="col-md-3 col-6">
+                <a href="#" class="btn btn-outline-success w-100 py-3 text-center">
+                    <i class="bi bi-person-plus d-block fs-3 mb-1"></i>
+                    <span>Registrar Vecino</span>
+                </a>
+            </div>
+            <div class="col-md-3 col-6">
+                <a href="#" class="btn btn-outline-warning w-100 py-3 text-center">
+                    <i class="bi bi-receipt d-block fs-3 mb-1"></i>
+                    <span>Registrar Deuda</span>
+                </a>
+            </div>
+            <div class="col-md-3 col-6">
+                <a href="#" class="btn btn-outline-danger w-100 py-3 text-center">
+                    <i class="bi bi-shield-exclamation d-block fs-3 mb-1"></i>
+                    <span>Registrar Multa</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

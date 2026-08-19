@@ -1,0 +1,35 @@
+name: QA & Tests
+
+on:
+  push:
+    branches: [ "main", "master", "develop" ]
+  pull_request:
+    branches: [ "main", "master", "develop" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run Flake8 Linter
+      run: |
+        # detener si hay errores de sintaxis o nombres no definidos
+        flake8 app tests --count --select=E9,F63,F7,F82 --show-source --statistics
+        # advertencias de estilo suaves (longitud de línea máx 127)
+        flake8 app tests --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+    - name: Run Pytest suite
+      run: |
+        pytest
