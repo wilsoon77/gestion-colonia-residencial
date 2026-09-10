@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+
+{% block title %}Multa #{{ multa.id_multa }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <a href="{{ url_for('multas.index') }}" class="btn btn-outline-secondary btn-sm mb-2">
+            <i class="bi bi-arrow-left me-1"></i>Volver a Multas
+        </a>
+        <h2 class="fw-bold mb-0"><i class="bi bi-shield-exclamation text-danger me-2"></i>Multa #{{ multa.id_multa }}</h2>
+    </div>
+    {% if current_user.rol and current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] %}
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalEditarMulta">
+            <i class="bi bi-pencil-square me-1"></i>Editar
+        </button>
+        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalEliminarMulta">
+            <i class="bi bi-trash3-fill me-1"></i>Eliminar
+        </button>
+    </div>
+    {% endif %}
+</div>
+
+<div class="row g-4">
+    <!-- Información de la Multa -->
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 fw-semibold text-secondary"><i class="bi bi-info-circle me-2"></i>Detalle de la Sanción</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">ID Multa:</span>
+                        <span class="fw-bold text-dark">#{{ multa.id_multa }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">Motivo:</span>
+                        <span class="fw-semibold text-dark">{{ multa.motivo }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">Monto de la Penalización:</span>
+                        <span class="fw-bold fs-4 {% if multa.estado == 'Pendiente' %}text-danger{% elif multa.estado == 'Pagada' %}text-success{% else %}text-muted{% endif %}">
+                            Q{{ "%.2f"|format(multa.monto) }}
+                        </span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">Fecha de Aplicación:</span>
+                        <span class="text-dark">{{ multa.fecha.strftime('%d/%m/%Y') }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">Estado Actual:</span>
+                        {% if multa.estado == 'Pendiente' %}
+                            <span class="badge bg-danger text-white"><i class="bi bi-clock me-1"></i>Pendiente</span>
+                        {% elif multa.estado == 'Pagada' %}
+                            <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Pagada</span>
+                        {% else %}
+                            <span class="badge bg-info text-dark"><i class="bi bi-patch-check me-1"></i>Exonerada</span>
+                        {% endif %}
+                    </li>
+                </ul>
+
+                {% if current_user.rol and current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] %}
+                <div class="mt-4 pt-3 border-top">
+                    <label class="form-label fw-semibold text-muted small">Cambio Rápido de Estado:</label>
+                    <div class="d-flex gap-2">
+                        {% if multa.estado != 'Pagada' %}
+                        <form method="POST" action="{{ url_for('multas.cambiar_estado', id_multa=multa.id_multa) }}" class="flex-grow-1">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="nuevo_estado" value="Pagada">
+                            <input type="hidden" name="next_url" value="{{ url_for('multas.detalle', id_multa=multa.id_multa) }}">
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="bi bi-check2-circle me-1"></i>Marcar como Pagada
+                            </button>
+                        </form>
+                        {% endif %}
+
+                        {% if multa.estado != 'Exonerada' %}
+                        <form method="POST" action="{{ url_for('multas.cambiar_estado', id_multa=multa.id_multa) }}" class="flex-grow-1">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="nuevo_estado" value="Exonerada">
+                            <input type="hidden" name="next_url" value="{{ url_for('multas.detalle', id_multa=multa.id_multa) }}">
+                            <button type="submit" class="btn btn-outline-info w-100">
+                                <i class="bi bi-patch-check me-1"></i>Exonerar
+                            </button>
+                        </form>
+                        {% endif %}
+
+                        {% if multa.estado != 'Pendiente' %}
+                        <form method="POST" action="{{ url_for('multas.cambiar_estado', id_multa=multa.id_multa) }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="nuevo_estado" value="Pendiente">
+                            <input type="hidden" name="next_url" value="{{ url_for('multas.detalle', id_multa=multa.id_multa) }}">
+                            <button type="submit" class="btn btn-outline-warning" title="Reactivar Pendiente">
+                                <i class="bi bi-arrow-counterclockwise me-1"></i>Reactivar
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Información del Residente Infractor -->
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 fw-semibold text-secondary"><i class="bi bi-person-vcard me-2"></i>Residente Infractor</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">Nombre Completo:</span>
+                        <a href="{{ url_for('vecinos.detalle', id_vecino=multa.vecino.id_vecino) }}" class="fw-bold text-dark text-decoration-none">
+                            {{ multa.vecino.nombre_completo }}
+                        </a>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">Vivienda:</span>
+                        {% if multa.vecino.casa %}
+                            <a href="{{ url_for('casas.detalle', id_casa=multa.vecino.casa.id_casa) }}" class="badge bg-primary text-decoration-none">
+                                <i class="bi bi-house-door me-1"></i>Casa #{{ multa.vecino.casa.numero_casa }}
+                            </a>
+                        {% else %}
+                            <span class="text-muted fst-italic">Sin casa asignada</span>
+                        {% endif %}
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">Teléfono:</span>
+                        <span class="text-dark">{{ multa.vecino.telefono or 'No registrado' }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">Correo:</span>
+                        <span class="text-dark">{{ multa.vecino.correo or 'No registrado' }}</span>
+                    </li>
+                </ul>
+
+                <div class="mt-3 text-end">
+                    <a href="{{ url_for('vecinos.detalle', id_vecino=multa.vecino.id_vecino) }}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-person-lines-fill me-1"></i>Ver Ficha del Residente
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if current_user.rol and current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] %}
+<!-- Modal Editar Multa -->
+<div class="modal fade" id="modalEditarMulta" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('multas.editar', id_multa=multa.id_multa) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square text-danger me-2"></i>Editar Multa #{{ multa.id_multa }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Residente Infractor <span class="text-danger">*</span></label>
+                        <select class="form-select" name="id_vecino" required>
+                            {% for v in vecinos %}
+                            <option value="{{ v.id_vecino }}" {% if v.id_vecino == multa.id_vecino %}selected{% endif %}>
+                                {{ v.nombre_completo }} {% if v.casa %}(Casa #{{ v.casa.numero_casa }}){% endif %}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Motivo de la Infracción <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="motivo" value="{{ multa.motivo }}" required>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Monto (Q) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text">Q</span>
+                                <input type="number" step="0.01" min="0.01" class="form-control" name="monto" value="{{ multa.monto }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Fecha</label>
+                            <input type="date" class="form-control" name="fecha" value="{{ multa.fecha.strftime('%Y-%m-%d') }}">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Estado</label>
+                        <select class="form-select" name="estado">
+                            <option value="Pendiente" {% if multa.estado == 'Pendiente' %}selected{% endif %}>Pendiente</option>
+                            <option value="Pagada" {% if multa.estado == 'Pagada' %}selected{% endif %}>Pagada</option>
+                            <option value="Exonerada" {% if multa.estado == 'Exonerada' %}selected{% endif %}>Exonerada</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger"><i class="bi bi-save me-1"></i>Actualizar Multa</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Eliminar Multa -->
+<div class="modal fade" id="modalEliminarMulta" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('multas.eliminar', id_multa=multa.id_multa) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i>Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro de que deseas eliminar la <strong>Multa #{{ multa.id_multa }}</strong> correspondiente a <strong>{{ multa.motivo }}</strong> por un monto de <strong>Q{{ "%.2f"|format(multa.monto) }}</strong>?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger"><i class="bi bi-trash3-fill me-1"></i>Sí, Eliminar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

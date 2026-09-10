@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+
+{% block title %}Gestión de Casas{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-0"><i class="bi bi-house-door text-primary me-2"></i>Gestión de Casas</h2>
+        <p class="text-muted mb-0">Control de viviendas, manzanas, lotes y estados de ocupación</p>
+    </div>
+    {% if current_user.rol and current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] %}
+    <div>
+        <button type="button" class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#modalCrearCasa">
+            <i class="bi bi-plus-circle-fill me-1"></i>Registrar Casa
+        </button>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Resumen Rápido -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3 col-6">
+        <div class="card shadow-sm border-0 bg-primary text-white p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-0 text-white-50">Total Registradas</h6>
+                    <h3 class="fw-bold mb-0">{{ total }}</h3>
+                </div>
+                <i class="bi bi-houses fs-2"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card shadow-sm border-0 bg-success text-white p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-0 text-white-50">Ocupadas</h6>
+                    <h3 class="fw-bold mb-0">{{ ocupadas }}</h3>
+                </div>
+                <i class="bi bi-person-check-fill fs-2"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card shadow-sm border-0 bg-warning text-dark p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-0 text-muted">Desocupadas</h6>
+                    <h3 class="fw-bold mb-0">{{ desocupadas }}</h3>
+                </div>
+                <i class="bi bi-door-open-fill fs-2"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card shadow-sm border-0 bg-secondary text-white p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-0 text-white-50">En Construcción</h6>
+                    <h3 class="fw-bold mb-0">{{ construccion }}</h3>
+                </div>
+                <i class="bi bi-tools fs-2"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Barra de Búsqueda y Filtros -->
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('casas.index') }}" class="row g-2">
+            <div class="col-md-5">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" class="form-control" name="q" value="{{ busqueda }}" placeholder="Buscar por número, manzana o calle...">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <select class="form-select" name="estado">
+                    <option value="">-- Todos los Estados --</option>
+                    <option value="Ocupada" {% if estado_filtro == 'Ocupada' %}selected{% endif %}>Ocupada</option>
+                    <option value="Desocupada" {% if estado_filtro == 'Desocupada' %}selected{% endif %}>Desocupada</option>
+                    <option value="En Construcción" {% if estado_filtro == 'En Construcción' %}selected{% endif %}>En Construcción</option>
+                    <option value="Mantenimiento" {% if estado_filtro == 'Mantenimiento' %}selected{% endif %}>Mantenimiento</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-primary flex-grow-1"><i class="bi bi-funnel-fill me-1"></i>Filtrar</button>
+                {% if busqueda or estado_filtro %}
+                <a href="{{ url_for('casas.index') }}" class="btn btn-outline-secondary" title="Limpiar Filtros"><i class="bi bi-x-circle"></i></a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Tabla de Casas -->
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-white py-3">
+        <h5 class="mb-0 fw-semibold text-secondary"><i class="bi bi-list-task me-2"></i>Listado de Viviendas</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Número</th>
+                        <th>Manzana</th>
+                        <th>Calle / Avenida</th>
+                        <th>Estado</th>
+                        <th>Residentes</th>
+                        <th class="text-end pe-4">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in casas %}
+                    <tr>
+                        <td class="ps-4">
+                            <span class="fw-bold text-primary fs-6">Casa #{{ c.numero_casa }}</span>
+                        </td>
+                        <td>
+                            {% if c.manzana %}
+                                <span class="badge bg-light text-dark border">Mz. {{ c.manzana }}</span>
+                            {% else %}
+                                <span class="text-muted fst-italic">-</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ c.calle_avenida or 'No especificada' }}</td>
+                        <td>
+                            {% if c.estado == 'Ocupada' %}
+                                <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1"><i class="bi bi-check-circle me-1"></i>Ocupada</span>
+                            {% elif c.estado == 'Desocupada' %}
+                                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1"><i class="bi bi-door-open me-1"></i>Desocupada</span>
+                            {% elif c.estado == 'En Construcción' %}
+                                <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle px-2 py-1"><i class="bi bi-tools me-1"></i>En Construcción</span>
+                            {% else %}
+                                <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1">{{ c.estado }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary rounded-pill">{{ c.vecinos|length }} residentes</span>
+                        </td>
+                        <td class="text-end pe-4">
+                            <a href="{{ url_for('casas.detalle', id_casa=c.id_casa) }}" class="btn btn-sm btn-outline-primary" title="Ver Detalles y Residentes">
+                                <i class="bi bi-eye-fill me-1"></i>Detalles
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">
+                            <i class="bi bi-inbox fs-2 d-block mb-2"></i>No se encontraron viviendas registradas con los criterios seleccionados.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% if current_user.rol and current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] %}
+<!-- Modal Crear Casa -->
+<div class="modal fade" id="modalCrearCasa" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('casas.crear') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-house-add-fill text-primary me-2"></i>Registrar Nueva Casa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Número de Casa / Lote <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="numero_casa" placeholder="Ej. 12-A o Lote 45" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Manzana</label>
+                        <input type="text" class="form-control" name="manzana" placeholder="Ej. Manzana B o Sector 2">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Calle / Avenida</label>
+                        <input type="text" class="form-control" name="calle_avenida" placeholder="Ej. 3ra Avenida Final">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Estado de la Vivienda</label>
+                        <select class="form-select" name="estado">
+                            <option value="Ocupada" selected>Ocupada</option>
+                            <option value="Desocupada">Desocupada</option>
+                            <option value="En Construcción">En Construcción</option>
+                            <option value="Mantenimiento">Mantenimiento</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i>Guardar Casa</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

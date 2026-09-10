@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Portal del Residente{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center my-5">
+    <div class="col-md-8 text-center">
+        <div class="card shadow-sm border-0 p-5">
+            <div class="mb-3 text-warning">
+                <i class="bi bi-person-exclamation display-1"></i>
+            </div>
+            <h3 class="fw-bold text-dark mb-2">Cuenta de Consulta sin Ficha Vinculada</h3>
+            <p class="text-muted mb-4">
+                Tu usuario está registrado en el sistema, pero aún no ha sido vinculado a una ficha de residente por la administración de la colonia.
+            </p>
+            <div class="alert alert-info small d-inline-block text-start mb-0">
+                <i class="bi bi-info-circle me-1"></i>Por favor contacta al administrador de la colonia para vincular tu cuenta con tu perfil y vivienda.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

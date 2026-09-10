@@ -4,6 +4,7 @@ from app.models.auth import Usuario
 
 auth_bp = Blueprint('auth', __name__)
 
+
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -28,6 +29,7 @@ def login():
             flash('Usuario o contraseña incorrectos.', 'danger')
 
     return render_template('auth/login.html')
+
 
 @auth_bp.route('/logout')
 @login_required

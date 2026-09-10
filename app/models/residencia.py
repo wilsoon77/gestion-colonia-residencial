@@ -1,15 +1,8 @@
 from app import db
 
-# Tabla intermedia de relación muchos a muchos con metadata de parentesco
-vecino_parentesco = db.Table(
-    'vecino_parentescos',
-    db.Column('id_vecino', db.Integer, db.ForeignKey('vecinos.id_vecino'), primary_key=True),
-    db.Column('id_relacionado', db.Integer, db.ForeignKey('vecinos.id_vecino'), primary_key=True),
-    db.Column('id_parentesco', db.Integer, db.ForeignKey('parentescos.id_parentesco'), primary_key=True)
-)
 
 class Casa(db.Model):
-    __tablename__ = 'casas'
+    __tablename__ = 'casa'
 
     id_casa = db.Column(db.Integer, primary_key=True)
     numero_casa = db.Column(db.String(20), nullable=False)
@@ -22,8 +15,9 @@ class Casa(db.Model):
     def __repr__(self):
         return f'<Casa {self.numero_casa} - Mz {self.manzana}>'
 
+
 class Familia(db.Model):
-    __tablename__ = 'familias'
+    __tablename__ = 'familia'
 
     id_familia = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable=False)  # Ej. "Familia Pérez López"
@@ -33,21 +27,21 @@ class Familia(db.Model):
     def __repr__(self):
         return f'<Familia {self.nombre}>'
 
+
 class Vecino(db.Model):
-    __tablename__ = 'vecinos'
+    __tablename__ = 'vecino'
 
     id_vecino = db.Column(db.Integer, primary_key=True)
     nombres = db.Column(db.String(100), nullable=False)
     apellidos = db.Column(db.String(100), nullable=False)
     telefono = db.Column(db.String(20), nullable=True)
     correo = db.Column(db.String(120), nullable=True)
-    id_casa = db.Column(db.Integer, db.ForeignKey('casas.id_casa'), nullable=True)
-    id_familia = db.Column(db.Integer, db.ForeignKey('familias.id_familia'), nullable=True)
+    id_casa = db.Column(db.Integer, db.ForeignKey('casa.id_casa'), nullable=True)
+    id_familia = db.Column(db.Integer, db.ForeignKey('familia.id_familia'), nullable=True)
 
-    # Relaciones de deudas, multas y cuenta de usuario
+    # Relaciones de deudas y multas
     deudas = db.relationship('Deuda', backref='vecino', lazy=True, cascade="all, delete-orphan")
     multas = db.relationship('Multa', backref='vecino', lazy=True, cascade="all, delete-orphan")
-    usuario_cuenta = db.relationship('Usuario', backref='vecino_asociado', uselist=False)
 
     @property
     def nombre_completo(self):
@@ -56,11 +50,56 @@ class Vecino(db.Model):
     def __repr__(self):
         return f'<Vecino {self.nombre_completo}>'
 
+
 class Parentesco(db.Model):
-    __tablename__ = 'parentescos'
+    __tablename__ = 'parentesco'
 
     id_parentesco = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(50), unique=True, nullable=False)  # Padre, Madre, Hijo, Hija, Encargado, Cónyuge
 
     def __repr__(self):
         return f'<Parentesco {self.nombre}>'
+
+
+class VecinoParentesco(db.Model):
+    """Modelo relacional para almacenar las relaciones de parentesco entre vecinos."""
+    __tablename__ = 'vecino_parentesco'
+
+    id_vecino = db.Column(
+        db.Integer,
+        db.ForeignKey('vecino.id_vecino', ondelete='CASCADE'),
+        primary_key=True
+    )
+    id_relacionado = db.Column(
+        db.Integer,
+        db.ForeignKey('vecino.id_vecino', ondelete='CASCADE'),
+        primary_key=True
+    )
+    id_parentesco = db.Column(
+        db.Integer,
+        db.ForeignKey('parentesco.id_parentesco', ondelete='CASCADE'),
+        primary_key=True
+    )
+
+    # Relaciones ORM
+    vecino_origen = db.relationship(
+        'Vecino',
+        foreign_keys=[id_vecino],
+        backref=db.backref('relaciones_origen', cascade='all, delete-orphan', lazy=True)
+    )
+    vecino_relacionado = db.relationship(
+        'Vecino',
+        foreign_keys=[id_relacionado],
+        backref=db.backref('relaciones_destino', cascade='all, delete-orphan', lazy=True)
+    )
+    parentesco = db.relationship(
+        'Parentesco',
+        backref=db.backref('relaciones_asignadas', lazy=True)
+    )
+
+    def __repr__(self):
+        return f'<VecinoParentesco {self.id_vecino} es {self.id_parentesco} de {self.id_relacionado}>'
+
+
+# Alias para compatibilidad de importaciones
+vecino_parentesco = VecinoParentesco

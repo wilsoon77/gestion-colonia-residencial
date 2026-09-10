@@ -1,11 +1,12 @@
 from datetime import date
 from app import db
 
+
 class Deuda(db.Model):
-    __tablename__ = 'deudas'
+    __tablename__ = 'deuda'
 
     id_deuda = db.Column(db.Integer, primary_key=True)
-    id_vecino = db.Column(db.Integer, db.ForeignKey('vecinos.id_vecino'), nullable=False)
+    id_vecino = db.Column(db.Integer, db.ForeignKey('vecino.id_vecino'), nullable=False)
     concepto = db.Column(db.String(150), nullable=False)
     monto = db.Column(db.Numeric(10, 2), nullable=False)
     fecha = db.Column(db.Date, default=date.today, nullable=False)
@@ -14,11 +15,12 @@ class Deuda(db.Model):
     def __repr__(self):
         return f'<Deuda {self.concepto} - Q{self.monto} ({self.estado})>'
 
+
 class Multa(db.Model):
-    __tablename__ = 'multas'
+    __tablename__ = 'multa'
 
     id_multa = db.Column(db.Integer, primary_key=True)
-    id_vecino = db.Column(db.Integer, db.ForeignKey('vecinos.id_vecino'), nullable=False)
+    id_vecino = db.Column(db.Integer, db.ForeignKey('vecino.id_vecino'), nullable=False)
     motivo = db.Column(db.String(200), nullable=False)
     monto = db.Column(db.Numeric(10, 2), nullable=False)
     fecha = db.Column(db.Date, default=date.today, nullable=False)

@@ -14,3 +14,25 @@ body {
 .btn {
     border-radius: 0.5rem;
 }
+
+/* Tarjetas Interactivas con Clic */
+.card-clickable {
+    cursor: pointer;
+    transition: transform 0.18s ease-in-out, box-shadow 0.18s ease-in-out;
+    text-decoration: none !important;
+}
+
+.card-clickable:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Filas de tabla interactivas */
+.table-clickable-row {
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out;
+}
+
+.table-clickable-row:hover {
+    background-color: rgba(13, 110, 253, 0.05) !important;
+}

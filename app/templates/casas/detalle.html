@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+
+{% block title %}Casa #{{ casa.numero_casa }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <a href="{{ url_for('casas.index') }}" class="btn btn-outline-secondary btn-sm mb-2">
+            <i class="bi bi-arrow-left me-1"></i>Volver a Casas
+        </a>
+        <h2 class="fw-bold mb-0"><i class="bi bi-house-door-fill text-primary me-2"></i>Casa #{{ casa.numero_casa }}</h2>
+    </div>
+    {% if current_user.rol and current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] %}
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalEditarCasa">
+            <i class="bi bi-pencil-square me-1"></i>Editar Información
+        </button>
+        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalEliminarCasa">
+            <i class="bi bi-trash3-fill me-1"></i>Eliminar
+        </button>
+    </div>
+    {% endif %}
+</div>
+
+<div class="row g-4">
+    <!-- Ficha de Información de la Vivienda -->
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 fw-semibold text-secondary"><i class="bi bi-info-circle me-2"></i>Ficha Técnica</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">Número / Lote:</span>
+                        <span class="fw-bold text-dark">#{{ casa.numero_casa }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">Manzana / Sector:</span>
+                        <span class="fw-semibold text-dark">{{ casa.manzana or 'No asignada' }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">Calle / Avenida:</span>
+                        <span class="text-dark">{{ casa.calle_avenida or 'No especificada' }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">Estado Actual:</span>
+                        {% if casa.estado == 'Ocupada' %}
+                            <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Ocupada</span>
+                        {% elif casa.estado == 'Desocupada' %}
+                            <span class="badge bg-warning text-dark"><i class="bi bi-door-open me-1"></i>Desocupada</span>
+                        {% elif casa.estado == 'En Construcción' %}
+                            <span class="badge bg-info text-dark"><i class="bi bi-tools me-1"></i>En Construcción</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ casa.estado }}</span>
+                        {% endif %}
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">Total Residentes:</span>
+                        <span class="badge bg-primary rounded-pill">{{ casa.vecinos|length }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de Residentes de la Casa (Filas Clickeables) -->
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-semibold text-secondary"><i class="bi bi-people-fill me-2"></i>Residentes en esta Vivienda</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Nombre Completo</th>
+                                <th>Familia</th>
+                                <th>Contacto</th>
+                                <th class="text-end pe-4">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for v in casa.vecinos %}
+                            <tr class="table-clickable-row" onclick="window.location='{{ url_for('vecinos.detalle', id_vecino=v.id_vecino) }}'" title="Clic para ver ficha de {{ v.nombre_completo }}">
+                                <td class="ps-4">
+                                    <div class="fw-bold text-dark"><i class="bi bi-person-fill text-success me-1"></i>{{ v.nombre_completo }}</div>
+                                </td>
+                                <td>
+                                    {% if v.familia %}
+                                        <a href="{{ url_for('familias.detalle', id_familia=v.familia.id_familia) }}" class="text-decoration-none fw-semibold text-info-emphasis" onclick="event.stopPropagation();">
+                                            <i class="bi bi-diagram-3 me-1"></i>{{ v.familia.nombre }}
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted fst-italic">Sin familia asignada</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if v.telefono %}
+                                        <div><i class="bi bi-telephone text-muted me-1"></i>{{ v.telefono }}</div>
+                                    {% endif %}
+                                    {% if v.correo %}
+                                        <small class="text-muted"><i class="bi bi-envelope me-1"></i>{{ v.correo }}</small>
+                                    {% endif %}
+                                    {% if not v.telefono and not v.correo %}
+                                        <span class="text-muted fst-italic">Sin contacto</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end pe-4" onclick="event.stopPropagation();">
+                                    <a href="{{ url_for('vecinos.detalle', id_vecino=v.id_vecino) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-person-lines-fill me-1"></i>Ver Ficha
+                                    </a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">
+                                    <i class="bi bi-person-x fs-2 d-block mb-2"></i>Actualmente no hay residentes registrados en esta casa.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if current_user.rol and current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] %}
+<!-- Modal Editar Casa -->
+<div class="modal fade" id="modalEditarCasa" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('casas.editar', id_casa=casa.id_casa) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square text-primary me-2"></i>Editar Casa #{{ casa.numero_casa }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Número de Casa / Lote <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="numero_casa" value="{{ casa.numero_casa }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Manzana</label>
+                        <input type="text" class="form-control" name="manzana" value="{{ casa.manzana or '' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Calle / Avenida</label>
+                        <input type="text" class="form-control" name="calle_avenida" value="{{ casa.calle_avenida or '' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Estado de la Vivienda</label>
+                        <select class="form-select" name="estado">
+                            <option value="Ocupada" {% if casa.estado == 'Ocupada' %}selected{% endif %}>Ocupada</option>
+                            <option value="Desocupada" {% if casa.estado == 'Desocupada' %}selected{% endif %}>Desocupada</option>
+                            <option value="En Construcción" {% if casa.estado == 'En Construcción' %}selected{% endif %}>En Construcción</option>
+                            <option value="Mantenimiento" {% if casa.estado == 'Mantenimiento' %}selected{% endif %}>Mantenimiento</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i>Actualizar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Eliminar Casa -->
+<div class="modal fade" id="modalEliminarCasa" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('casas.eliminar', id_casa=casa.id_casa) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i>Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro de que deseas eliminar la <strong>Casa #{{ casa.numero_casa }}</strong>?</p>
+                    <div class="alert alert-warning small mb-0">
+                        <i class="bi bi-info-circle-fill me-1"></i>Los residentes vinculados no se eliminarán, pero quedarán sin casa asignada.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger"><i class="bi bi-trash3-fill me-1"></i>Sí, Eliminar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

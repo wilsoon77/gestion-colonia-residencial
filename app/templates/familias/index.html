@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}Gestión de Familias{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-0"><i class="bi bi-diagram-3 text-info me-2"></i>Gestión de Familias</h2>
+        <p class="text-muted mb-0">Organización y control de los núcleos familiares de la colonia</p>
+    </div>
+    {% if current_user.rol and current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] %}
+    <div>
+        <button type="button" class="btn btn-info text-white shadow-sm" data-bs-toggle="modal" data-bs-target="#modalCrearFamilia">
+            <i class="bi bi-plus-circle-fill me-1"></i>Registrar Familia
+        </button>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Barra de Búsqueda -->
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('familias.index') }}" class="row g-2">
+            <div class="col-md-9">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" class="form-control" name="q" value="{{ busqueda }}" placeholder="Buscar por apellido o nombre de familia (ej. Familia Pérez López)...">
+                </div>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-primary flex-grow-1"><i class="bi bi-search me-1"></i>Buscar</button>
+                {% if busqueda %}
+                <a href="{{ url_for('familias.index') }}" class="btn btn-outline-secondary" title="Limpiar"><i class="bi bi-x-circle"></i></a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Tabla de Familias -->
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 fw-semibold text-secondary"><i class="bi bi-people-fill me-2"></i>Familias Registradas</h5>
+        <span class="badge bg-info text-dark">{{ total }} familias en total</span>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">ID</th>
+                        <th>Nombre de la Familia</th>
+                        <th>Integrantes Registrados</th>
+                        <th class="text-end pe-4">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for f in familias %}
+                    <tr>
+                        <td class="ps-4 fw-semibold text-muted">#{{ f.id_familia }}</td>
+                        <td>
+                            <span class="fw-bold text-dark fs-6">{{ f.nombre }}</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary rounded-pill">{{ f.integrantes|length }} integrantes</span>
+                        </td>
+                        <td class="text-end pe-4">
+                            <a href="{{ url_for('familias.detalle', id_familia=f.id_familia) }}" class="btn btn-sm btn-outline-info" title="Ver Integrantes">
+                                <i class="bi bi-diagram-3-fill me-1"></i>Ver Núcleo Familiar
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center py-4 text-muted">
+                            <i class="bi bi-inbox fs-2 d-block mb-2"></i>No se encontraron familias registradas.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% if current_user.rol and current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] %}
+<!-- Modal Crear Familia -->
+<div class="modal fade" id="modalCrearFamilia" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('familias.crear') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-diagram-3 text-info me-2"></i>Registrar Nueva Familia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Nombre de la Familia <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="nombre" placeholder="Ej. Familia Rodríguez Marroquín" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-info text-white"><i class="bi bi-save me-1"></i>Guardar Familia</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

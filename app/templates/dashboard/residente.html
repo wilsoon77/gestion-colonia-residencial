@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+
+{% block title %}Portal del Residente{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-0"><i class="bi bi-person-circle text-primary me-2"></i>Bienvenido, {{ vecino.nombres }}</h2>
+        <p class="text-muted mb-0">Portal de consulta y estado de cuenta residencial</p>
+    </div>
+    <div>
+        <a href="{{ url_for('vecinos.detalle', id_vecino=vecino.id_vecino) }}" class="btn btn-outline-primary shadow-sm">
+            <i class="bi bi-person-badge me-1"></i>Ver Mi Perfil
+        </a>
+    </div>
+</div>
+
+<!-- Tarjetas de Información Personal y Resumen del Residente -->
+<div class="row g-3 mb-4">
+    <!-- Vivienda Asignada -->
+    <div class="col-md-3 col-sm-6">
+        {% if vecino.casa %}
+        <a href="{{ url_for('casas.detalle', id_casa=vecino.casa.id_casa) }}" class="card-clickable d-block h-100" title="Ver información de mi casa">
+            <div class="card shadow-sm border-0 border-start border-primary border-4 h-100">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted fw-semibold mb-1">Mi Vivienda</h6>
+                        <h4 class="fw-bold mb-0 text-primary">Casa #{{ vecino.casa.numero_casa }}</h4>
+                        <small class="text-muted">{{ vecino.casa.calle_avenida or 'Sector Residencial' }}</small>
+                    </div>
+                    <div class="bg-primary-subtle text-primary p-3 rounded-circle">
+                        <i class="bi bi-house-door-fill fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </a>
+        {% else %}
+        <div class="card shadow-sm border-0 border-start border-secondary border-4 h-100">
+            <div class="card-body">
+                <h6 class="text-muted fw-semibold mb-1">Mi Vivienda</h6>
+                <p class="text-muted mb-0 small">Sin vivienda asignada</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Núcleo Familiar -->
+    <div class="col-md-3 col-sm-6">
+        {% if vecino.familia %}
+        <a href="{{ url_for('familias.detalle', id_familia=vecino.familia.id_familia) }}" class="card-clickable d-block h-100" title="Ver integrantes de mi familia">
+            <div class="card shadow-sm border-0 border-start border-info border-4 h-100">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted fw-semibold mb-1">Mi Familia</h6>
+                        <h5 class="fw-bold mb-0 text-info text-truncate" style="max-width: 130px;">{{ vecino.familia.nombre }}</h5>
+                        <small class="text-muted">{{ vecino.familia.integrantes|length }} integrantes</small>
+                    </div>
+                    <div class="bg-info-subtle text-info p-3 rounded-circle">
+                        <i class="bi bi-diagram-3-fill fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </a>
+        {% else %}
+        <div class="card shadow-sm border-0 border-start border-secondary border-4 h-100">
+            <div class="card-body">
+                <h6 class="text-muted fw-semibold mb-1">Mi Familia</h6>
+                <p class="text-muted mb-0 small">Sin grupo familiar</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Mis Deudas Pendientes -->
+    <div class="col-md-3 col-sm-6">
+        <a href="{{ url_for('deudas.index') }}" class="card-clickable d-block h-100" title="Ver detalle de mis cobros pendientes">
+            <div class="card shadow-sm border-0 border-start border-warning border-4 h-100">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted fw-semibold mb-1">Saldo Deudas</h6>
+                        <h4 class="fw-bold mb-0 text-warning">Q{{ "%.2f"|format(monto_deudas_pendiente) }}</h4>
+                        <small class="text-muted">{{ mis_deudas_pendientes }} pendientes</small>
+                    </div>
+                    <div class="bg-warning-subtle text-warning p-3 rounded-circle">
+                        <i class="bi bi-cash-stack fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Mis Multas Pendientes -->
+    <div class="col-md-3 col-sm-6">
+        <a href="{{ url_for('multas.index') }}" class="card-clickable d-block h-100" title="Ver detalle de mis multas pendientes">
+            <div class="card shadow-sm border-0 border-start border-danger border-4 h-100">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted fw-semibold mb-1">Saldo Multas</h6>
+                        <h4 class="fw-bold mb-0 text-danger">Q{{ "%.2f"|format(monto_multas_pendiente) }}</h4>
+                        <small class="text-muted">{{ mis_multas_pendientes }} activas</small>
+                    </div>
+                    <div class="bg-danger-subtle text-danger p-3 rounded-circle">
+                        <i class="bi bi-exclamation-octagon-fill fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<!-- Tablas de Historial Personal -->
+<div class="row g-4 mb-4">
+    <!-- Mis Deudas Recientes -->
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-semibold text-secondary"><i class="bi bi-receipt text-warning me-2"></i>Mis Deudas y Pagos</h5>
+                <a href="{{ url_for('deudas.index') }}" class="btn btn-sm btn-outline-warning text-dark fw-semibold">
+                    <i class="bi bi-arrow-right-circle me-1"></i>Ver Todas
+                </a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0 small">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-3">Concepto</th>
+                                <th>Monto</th>
+                                <th>Fecha</th>
+                                <th class="pe-3">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for d in ultimas_deudas %}
+                            <tr class="table-clickable-row" onclick="window.location='{{ url_for('deudas.detalle', id_deuda=d.id_deuda) }}'" title="Clic para ver detalle">
+                                <td class="ps-3 fw-semibold text-dark">{{ d.concepto }}</td>
+                                <td class="fw-bold text-dark">Q{{ "%.2f"|format(d.monto) }}</td>
+                                <td class="text-muted">{{ d.fecha.strftime('%d/%m/%Y') }}</td>
+                                <td class="pe-3">
+                                    <span class="badge bg-{{ 'warning text-dark' if d.estado == 'Pendiente' else ('success' if d.estado == 'Pagada' else 'secondary') }}">
+                                        {{ d.estado }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">
+                                    <i class="bi bi-check-circle fs-3 text-success d-block mb-1"></i>No tienes deudas registradas.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mis Multas Recientes -->
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-semibold text-secondary"><i class="bi bi-shield-exclamation text-danger me-2"></i>Mis Sanciones y Multas</h5>
+                <a href="{{ url_for('multas.index') }}" class="btn btn-sm btn-outline-danger">
+                    <i class="bi bi-arrow-right-circle me-1"></i>Ver Todas
+                </a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0 small">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-3">Motivo</th>
+                                <th>Monto</th>
+                                <th>Fecha</th>
+                                <th class="pe-3">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for m in ultimas_multas %}
+                            <tr class="table-clickable-row" onclick="window.location='{{ url_for('multas.detalle', id_multa=m.id_multa) }}'" title="Clic para ver detalle">
+                                <td class="ps-3 fw-semibold text-dark">{{ m.motivo }}</td>
+                                <td class="fw-bold text-dark">Q{{ "%.2f"|format(m.monto) }}</td>
+                                <td class="text-muted">{{ m.fecha.strftime('%d/%m/%Y') }}</td>
+                                <td class="pe-3">
+                                    <span class="badge bg-{{ 'danger' if m.estado == 'Pendiente' else ('success' if m.estado == 'Pagada' else 'info text-dark') }}">
+                                        {{ m.estado }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">
+                                    <i class="bi bi-shield-check fs-3 text-success d-block mb-1"></i>No tienes sanciones ni multas registradas.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -27,28 +27,113 @@
             <div class="collapse navbar-collapse" id="mainNavbar">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('dashboard.index') }}"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a>
+                        <a class="nav-link {% if request.endpoint == 'dashboard.index' %}active fw-semibold{% endif %}" href="{{ url_for('dashboard.index') }}">
+                            <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                        </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#"><i class="bi bi-house-door me-1"></i>Casas</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#"><i class="bi bi-people me-1"></i>Vecinos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#"><i class="bi bi-cash-stack me-1"></i>Deudas</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#"><i class="bi bi-exclamation-octagon me-1"></i>Multas</a>
-                    </li>
+
+                    {% if current_user.rol and current_user.rol.nombre == 'Usuario de Consulta' %}
+                        <!-- Menú para Residente / Usuario de Consulta -->
+                        {% if current_user.vecino %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if 'vecinos' in request.endpoint %}active fw-semibold{% endif %}" href="{{ url_for('vecinos.detalle', id_vecino=current_user.vecino.id_vecino) }}">
+                                <i class="bi bi-person-badge me-1"></i>Mi Perfil
+                            </a>
+                        </li>
+                        {% if current_user.vecino.id_casa %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if 'casas' in request.endpoint %}active fw-semibold{% endif %}" href="{{ url_for('casas.detalle', id_casa=current_user.vecino.id_casa) }}">
+                                <i class="bi bi-house-door me-1"></i>Mi Vivienda
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if current_user.vecino.id_familia %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if 'familias' in request.endpoint %}active fw-semibold{% endif %}" href="{{ url_for('familias.detalle', id_familia=current_user.vecino.id_familia) }}">
+                                <i class="bi bi-diagram-3 me-1"></i>Mi Familia
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if 'deudas' in request.endpoint %}active fw-semibold{% endif %}" href="{{ url_for('deudas.index') }}">
+                                <i class="bi bi-cash-stack me-1"></i>Mis Deudas
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if 'multas' in request.endpoint %}active fw-semibold{% endif %}" href="{{ url_for('multas.index') }}">
+                                <i class="bi bi-exclamation-octagon me-1"></i>Mis Multas
+                            </a>
+                        </li>
+                    {% else %}
+                        <!-- Menú Administrativo Completo -->
+                        <li class="nav-item">
+                            <a class="nav-link {% if 'casas' in request.endpoint %}active fw-semibold{% endif %}" href="{{ url_for('casas.index') }}">
+                                <i class="bi bi-house-door me-1"></i>Casas
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if 'familias' in request.endpoint %}active fw-semibold{% endif %}" href="{{ url_for('familias.index') }}">
+                                <i class="bi bi-diagram-3 me-1"></i>Familias
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if 'vecinos' in request.endpoint %}active fw-semibold{% endif %}" href="{{ url_for('vecinos.index') }}">
+                                <i class="bi bi-people me-1"></i>Vecinos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if 'parentescos' in request.endpoint %}active fw-semibold{% endif %}" href="{{ url_for('parentescos.index') }}">
+                                <i class="bi bi-diagram-2 me-1"></i>Parentescos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if 'deudas' in request.endpoint %}active fw-semibold{% endif %}" href="{{ url_for('deudas.index') }}">
+                                <i class="bi bi-cash-stack me-1"></i>Deudas
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if 'multas' in request.endpoint %}active fw-semibold{% endif %}" href="{{ url_for('multas.index') }}">
+                                <i class="bi bi-exclamation-octagon me-1"></i>Multas
+                            </a>
+                        </li>
+                        {% if current_user.rol and current_user.rol.nombre == 'Administrador' %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if 'usuarios' in request.endpoint %}active fw-semibold{% endif %}" href="{{ url_for('usuarios.index') }}">
+                                <i class="bi bi-person-gear me-1"></i>Usuarios
+                            </a>
+                        </li>
+                        {% endif %}
+                    {% endif %}
                 </ul>
                 <ul class="navbar-nav">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-person-circle me-1"></i>{{ current_user.usuario }} ({{ current_user.rol.nombre if current_user.rol else 'Usuario' }})
+                            <i class="bi bi-person-circle me-1"></i>{{ current_user.usuario }} 
+                            <span class="badge bg-light text-primary ms-1">{{ current_user.rol.nombre if current_user.rol else 'Usuario' }}</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow">
-                            <li><a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}"><i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión</a></li>
+                            <li>
+                                <h6 class="dropdown-header">
+                                    Conectado como <strong>{{ current_user.usuario }}</strong>
+                                    {% if current_user.vecino %}
+                                    <small class="d-block text-muted">{{ current_user.vecino.nombre_completo }}</small>
+                                    {% endif %}
+                                </h6>
+                            </li>
+                            {% if current_user.vecino %}
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('vecinos.detalle', id_vecino=current_user.vecino.id_vecino) }}">
+                                    <i class="bi bi-person-vcard me-2"></i>Mi Ficha de Residente
+                                </a>
+                            </li>
+                            {% endif %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}">
+                                    <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
+                                </a>
+                            </li>
                         </ul>
                     </li>
                 </ul>
@@ -64,6 +149,7 @@
             {% if messages %}
                 {% for category, message in messages %}
                     <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm" role="alert">
+                        <i class="bi {% if category == 'success' %}bi-check-circle-fill{% elif category == 'danger' %}bi-exclamation-triangle-fill{% elif category == 'warning' %}bi-exclamation-circle-fill{% else %}bi-info-circle-fill{% endif %} me-2"></i>
                         {{ message }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>

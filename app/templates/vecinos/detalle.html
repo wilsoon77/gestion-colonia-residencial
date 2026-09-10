@@ -1,0 +1,431 @@
+{% extends 'base.html' %}
+
+{% block title %}Vecino: {{ vecino.nombre_completo }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <a href="{{ url_for('vecinos.index') }}" class="btn btn-outline-secondary btn-sm mb-2">
+            <i class="bi bi-arrow-left me-1"></i>Volver a Vecinos
+        </a>
+        <h2 class="fw-bold mb-0"><i class="bi bi-person-badge-fill text-success me-2"></i>{{ vecino.nombre_completo }}</h2>
+    </div>
+    {% if current_user.rol and current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] %}
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalEditarVecino">
+            <i class="bi bi-pencil-square me-1"></i>Editar Datos
+        </button>
+        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalEliminarVecino">
+            <i class="bi bi-trash3-fill me-1"></i>Eliminar
+        </button>
+    </div>
+    {% endif %}
+</div>
+
+<div class="row g-4">
+    <!-- Información Personal y de Residencia -->
+    <div class="col-md-5">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 fw-semibold text-secondary"><i class="bi bi-person-vcard me-2"></i>Datos del Residente</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">ID Residente:</span>
+                        <span class="fw-bold text-dark">#{{ vecino.id_vecino }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">Nombres:</span>
+                        <span class="fw-semibold text-dark">{{ vecino.nombres }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">Apellidos:</span>
+                        <span class="fw-semibold text-dark">{{ vecino.apellidos }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">Teléfono:</span>
+                        <span class="text-dark">{{ vecino.telefono or 'No registrado' }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">Correo:</span>
+                        <span class="text-dark">{{ vecino.correo or 'No registrado' }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">Vivienda Asignada:</span>
+                        {% if vecino.casa %}
+                            <a href="{{ url_for('casas.detalle', id_casa=vecino.casa.id_casa) }}" class="badge bg-primary text-decoration-none shadow-sm py-2 px-3">
+                                <i class="bi bi-house-door me-1"></i>Casa #{{ vecino.casa.numero_casa }}
+                            </a>
+                        {% else %}
+                            <span class="text-muted fst-italic">Sin casa asignada</span>
+                        {% endif %}
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">Familia:</span>
+                        {% if vecino.familia %}
+                            <a href="{{ url_for('familias.detalle', id_familia=vecino.familia.id_familia) }}" class="badge bg-info text-dark text-decoration-none shadow-sm py-2 px-3">
+                                <i class="bi bi-diagram-3 me-1"></i>{{ vecino.familia.nombre }}
+                            </a>
+                        {% else %}
+                            <span class="text-muted fst-italic">Sin familia asociada</span>
+                        {% endif %}
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">Cuenta de Usuario:</span>
+                        {% if vecino.usuario_cuenta %}
+                            <span class="badge bg-secondary py-2 px-3"><i class="bi bi-person-check me-1"></i>{{ vecino.usuario_cuenta.usuario }}</span>
+                        {% else %}
+                            <span class="text-muted fst-italic">Sin cuenta de acceso</span>
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Relaciones Familiares y Parentescos -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-semibold text-secondary">
+                    <i class="bi bi-diagram-2-fill me-2 text-primary"></i>Relaciones de Parentesco
+                </h5>
+                {% if current_user.rol and current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] %}
+                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalAsignarParentesco">
+                    <i class="bi bi-plus-circle me-1"></i>Vincular Familiar
+                </button>
+                {% endif %}
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0 small">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-3">Parentesco</th>
+                                <th>Familiar Relacionado</th>
+                                <th class="text-end pe-3">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for r in vecino.relaciones_origen %}
+                            <tr class="table-clickable-row" onclick="window.location='{{ url_for('vecinos.detalle', id_vecino=r.vecino_relacionado.id_vecino) }}'">
+                                <td class="ps-3">
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1">
+                                        Es {{ r.parentesco.nombre }} de:
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('vecinos.detalle', id_vecino=r.vecino_relacionado.id_vecino) }}" class="fw-bold text-dark text-decoration-none">
+                                        {{ r.vecino_relacionado.nombre_completo }}
+                                    </a>
+                                    {% if r.vecino_relacionado.casa %}
+                                        <small class="text-muted d-block">Casa #{{ r.vecino_relacionado.casa.numero_casa }}</small>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end pe-3" onclick="event.stopPropagation();">
+                                    {% if current_user.rol and current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] %}
+                                    <form method="POST" action="{{ url_for('parentescos.eliminar') }}" class="d-inline">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <input type="hidden" name="id_vecino" value="{{ r.id_vecino }}">
+                                        <input type="hidden" name="id_relacionado" value="{{ r.id_relacionado }}">
+                                        <input type="hidden" name="id_parentesco" value="{{ r.id_parentesco }}">
+                                        <input type="hidden" name="next_url" value="{{ url_for('vecinos.detalle', id_vecino=vecino.id_vecino) }}">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-1" title="Eliminar Relación">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="3" class="text-center py-3 text-muted">
+                                    <i class="bi bi-people d-block fs-4 mb-1"></i>No hay parentescos vinculados directamente a este vecino.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resumen Financiero del Residente (Cards Clickeables) -->
+    <div class="col-md-7">
+        <div class="row g-3 mb-4">
+            <div class="col-sm-6">
+                <a href="{{ url_for('deudas.index', vecino_id=vecino.id_vecino) }}" class="card-clickable d-block h-100" title="Ver todas las deudas de este residente">
+                    <div class="card shadow-sm border-0 border-start border-warning border-4 h-100">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted fw-semibold mb-1">Deudas Asociadas</h6>
+                                <h3 class="fw-bold mb-0 text-warning">{{ vecino.deudas|length }}</h3>
+                                <small class="text-warning-emphasis fw-semibold">
+                                    <i class="bi bi-box-arrow-up-right me-1"></i>Ver en Control de Deudas
+                                </small>
+                            </div>
+                            <div class="bg-warning-subtle text-warning p-3 rounded-circle">
+                                <i class="bi bi-cash-stack fs-3"></i>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-6">
+                <a href="{{ url_for('multas.index', vecino_id=vecino.id_vecino) }}" class="card-clickable d-block h-100" title="Ver todas las multas de este residente">
+                    <div class="card shadow-sm border-0 border-start border-danger border-4 h-100">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted fw-semibold mb-1">Multas Asociadas</h6>
+                                <h3 class="fw-bold mb-0 text-danger">{{ vecino.multas|length }}</h3>
+                                <small class="text-danger fw-semibold">
+                                    <i class="bi bi-box-arrow-up-right me-1"></i>Ver en Control de Multas
+                                </small>
+                            </div>
+                            <div class="bg-danger-subtle text-danger p-3 rounded-circle">
+                                <i class="bi bi-exclamation-octagon-fill fs-3"></i>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Tabla Rápida de Deudas (Filas Clickeables) -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 fw-bold text-secondary"><i class="bi bi-cash-stack me-2 text-warning"></i>Historial de Deudas</h6>
+                <a href="{{ url_for('deudas.index', vecino_id=vecino.id_vecino) }}" class="btn btn-sm btn-outline-warning text-dark fw-semibold">
+                    <i class="bi bi-arrow-right-circle me-1"></i>Gestionar Deudas
+                </a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0 small">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-3">Concepto</th>
+                                <th>Monto</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th class="text-end pe-3">Detalle</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for d in vecino.deudas %}
+                            <tr class="table-clickable-row" onclick="window.location='{{ url_for('deudas.detalle', id_deuda=d.id_deuda) }}'" title="Clic para ver detalle de la deuda #{{ d.id_deuda }}">
+                                <td class="ps-3 fw-semibold text-dark">
+                                    <i class="bi bi-receipt text-warning me-1"></i>{{ d.concepto }}
+                                </td>
+                                <td class="fw-bold text-dark">Q{{ "%.2f"|format(d.monto) }}</td>
+                                <td class="text-muted">{{ d.fecha.strftime('%d/%m/%Y') }}</td>
+                                <td>
+                                    <span class="badge bg-{{ 'warning text-dark' if d.estado == 'Pendiente' else ('success' if d.estado == 'Pagada' else 'secondary') }}">
+                                        {{ d.estado }}
+                                    </span>
+                                </td>
+                                <td class="text-end pe-3">
+                                    <a href="{{ url_for('deudas.detalle', id_deuda=d.id_deuda) }}" class="btn btn-sm btn-outline-primary py-0 px-2">
+                                        <i class="bi bi-eye-fill"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center py-3 text-muted">Sin deudas registradas</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla Rápida de Multas (Filas Clickeables) -->
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 fw-bold text-secondary"><i class="bi bi-exclamation-octagon me-2 text-danger"></i>Historial de Multas</h6>
+                <a href="{{ url_for('multas.index', vecino_id=vecino.id_vecino) }}" class="btn btn-sm btn-outline-danger">
+                    <i class="bi bi-arrow-right-circle me-1"></i>Gestionar Multas
+                </a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0 small">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-3">Motivo</th>
+                                <th>Monto</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th class="text-end pe-3">Detalle</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for m in vecino.multas %}
+                            <tr class="table-clickable-row" onclick="window.location='{{ url_for('multas.detalle', id_multa=m.id_multa) }}'" title="Clic para ver detalle de la multa #{{ m.id_multa }}">
+                                <td class="ps-3 fw-semibold text-dark">
+                                    <i class="bi bi-shield-exclamation text-danger me-1"></i>{{ m.motivo }}
+                                </td>
+                                <td class="fw-bold text-dark">Q{{ "%.2f"|format(m.monto) }}</td>
+                                <td class="text-muted">{{ m.fecha.strftime('%d/%m/%Y') }}</td>
+                                <td>
+                                    <span class="badge bg-{{ 'danger' if m.estado == 'Pendiente' else ('success' if m.estado == 'Pagada' else 'info text-dark') }}">
+                                        {{ m.estado }}
+                                    </span>
+                                </td>
+                                <td class="text-end pe-3">
+                                    <a href="{{ url_for('multas.detalle', id_multa=m.id_multa) }}" class="btn btn-sm btn-outline-primary py-0 px-2">
+                                        <i class="bi bi-eye-fill"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center py-3 text-muted">Sin multas registradas</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if current_user.rol and current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] %}
+<!-- Modal Asignar Parentesco -->
+<div class="modal fade" id="modalAsignarParentesco" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('parentescos.asignar') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="id_vecino" value="{{ vecino.id_vecino }}">
+                <input type="hidden" name="next_url" value="{{ url_for('vecinos.detalle', id_vecino=vecino.id_vecino) }}">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-diagram-2 text-primary me-2"></i>Vincular Relación de Parentesco</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small mb-3">
+                        Establece el rol o parentesco que <strong>{{ vecino.nombre_completo }}</strong> tiene respecto a otro vecino.
+                    </p>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Tipo de Parentesco <span class="text-danger">*</span></label>
+                        <select class="form-select" name="id_parentesco" required>
+                            <option value="">-- Seleccionar Parentesco --</option>
+                            {% for p in parentescos %}
+                            <option value="{{ p.id_parentesco }}">{{ vecino.nombres }} es {{ p.nombre }} de...</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Familiar Relacionado <span class="text-danger">*</span></label>
+                        <select class="form-select" name="id_relacionado" required>
+                            <option value="">-- Seleccionar Residente --</option>
+                            {% for ov in otros_vecinos %}
+                            <option value="{{ ov.id_vecino }}">
+                                {{ ov.nombre_completo }} {% if ov.casa %}(Casa #{{ ov.casa.numero_casa }}){% endif %} {% if ov.familia %}[{{ ov.familia.nombre }}]{% endif %}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-link-45deg me-1"></i>Vincular Parentesco</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar Vecino -->
+<div class="modal fade" id="modalEditarVecino" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('vecinos.editar', id_vecino=vecino.id_vecino) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square text-success me-2"></i>Editar Vecino</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Nombres <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="nombres" value="{{ vecino.nombres }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Apellidos <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="apellidos" value="{{ vecino.apellidos }}" required>
+                        </div>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Teléfono</label>
+                            <input type="text" class="form-control" name="telefono" value="{{ vecino.telefono or '' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Correo Electrónico</label>
+                            <input type="email" class="form-control" name="correo" value="{{ vecino.correo or '' }}">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Casa Asignada</label>
+                        <select class="form-select" name="id_casa">
+                            <option value="">-- Sin Casa Asignada --</option>
+                            {% for c in casas %}
+                            <option value="{{ c.id_casa }}" {% if vecino.id_casa == c.id_casa %}selected{% endif %}>
+                                Casa #{{ c.numero_casa }} {% if c.manzana %}(Mz. {{ c.manzana }}){% endif %}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Familia</label>
+                        <select class="form-select" name="id_familia">
+                            <option value="">-- Sin Familia Asignada --</option>
+                            {% for f in familias %}
+                            <option value="{{ f.id_familia }}" {% if vecino.id_familia == f.id_familia %}selected{% endif %}>
+                                {{ f.nombre }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success"><i class="bi bi-save me-1"></i>Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Eliminar Vecino -->
+<div class="modal fade" id="modalEliminarVecino" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('vecinos.eliminar', id_vecino=vecino.id_vecino) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i>Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro de que deseas eliminar al residente <strong>{{ vecino.nombre_completo }}</strong>?</p>
+                    <div class="alert alert-danger small mb-0">
+                        <i class="bi bi-exclamation-octagon-fill me-1"></i>Se eliminarán también las relaciones de parentesco, deudas y multas asociadas.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger"><i class="bi bi-trash3-fill me-1"></i>Sí, Eliminar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

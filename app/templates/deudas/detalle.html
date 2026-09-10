@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+
+{% block title %}Deuda #{{ deuda.id_deuda }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <a href="{{ url_for('deudas.index') }}" class="btn btn-outline-secondary btn-sm mb-2">
+            <i class="bi bi-arrow-left me-1"></i>Volver a Deudas
+        </a>
+        <h2 class="fw-bold mb-0"><i class="bi bi-receipt text-warning me-2"></i>Deuda #{{ deuda.id_deuda }}</h2>
+    </div>
+    {% if current_user.rol and current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] %}
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-warning text-dark fw-semibold" data-bs-toggle="modal" data-bs-target="#modalEditarDeuda">
+            <i class="bi bi-pencil-square me-1"></i>Editar
+        </button>
+        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalEliminarDeuda">
+            <i class="bi bi-trash3-fill me-1"></i>Eliminar
+        </button>
+    </div>
+    {% endif %}
+</div>
+
+<div class="row g-4">
+    <!-- Información de la Deuda -->
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 fw-semibold text-secondary"><i class="bi bi-info-circle me-2"></i>Detalle del Cobro</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">ID Deuda:</span>
+                        <span class="fw-bold text-dark">#{{ deuda.id_deuda }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">Concepto:</span>
+                        <span class="fw-semibold text-dark">{{ deuda.concepto }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">Monto Total:</span>
+                        <span class="fw-bold fs-4 {% if deuda.estado == 'Pendiente' %}text-danger{% elif deuda.estado == 'Pagada' %}text-success{% else %}text-muted{% endif %}">
+                            Q{{ "%.2f"|format(deuda.monto) }}
+                        </span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">Fecha de Emisión:</span>
+                        <span class="text-dark">{{ deuda.fecha.strftime('%d/%m/%Y') }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">Estado Actual:</span>
+                        {% if deuda.estado == 'Pendiente' %}
+                            <span class="badge bg-warning text-dark"><i class="bi bi-clock me-1"></i>Pendiente</span>
+                        {% elif deuda.estado == 'Pagada' %}
+                            <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Pagada</span>
+                        {% else %}
+                            <span class="badge bg-secondary"><i class="bi bi-slash-circle me-1"></i>Anulada</span>
+                        {% endif %}
+                    </li>
+                </ul>
+
+                {% if current_user.rol and current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] %}
+                <div class="mt-4 pt-3 border-top">
+                    <label class="form-label fw-semibold text-muted small">Cambio Rápido de Estado:</label>
+                    <div class="d-flex gap-2">
+                        {% if deuda.estado != 'Pagada' %}
+                        <form method="POST" action="{{ url_for('deudas.cambiar_estado', id_deuda=deuda.id_deuda) }}" class="flex-grow-1">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="nuevo_estado" value="Pagada">
+                            <input type="hidden" name="next_url" value="{{ url_for('deudas.detalle', id_deuda=deuda.id_deuda) }}">
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="bi bi-check2-circle me-1"></i>Marcar como Pagada
+                            </button>
+                        </form>
+                        {% endif %}
+
+                        {% if deuda.estado != 'Pendiente' %}
+                        <form method="POST" action="{{ url_for('deudas.cambiar_estado', id_deuda=deuda.id_deuda) }}" class="flex-grow-1">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="nuevo_estado" value="Pendiente">
+                            <input type="hidden" name="next_url" value="{{ url_for('deudas.detalle', id_deuda=deuda.id_deuda) }}">
+                            <button type="submit" class="btn btn-warning w-100 text-dark">
+                                <i class="bi bi-arrow-counterclockwise me-1"></i>Marcar Pendiente
+                            </button>
+                        </form>
+                        {% endif %}
+
+                        {% if deuda.estado != 'Anulada' %}
+                        <form method="POST" action="{{ url_for('deudas.cambiar_estado', id_deuda=deuda.id_deuda) }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="nuevo_estado" value="Anulada">
+                            <input type="hidden" name="next_url" value="{{ url_for('deudas.detalle', id_deuda=deuda.id_deuda) }}">
+                            <button type="submit" class="btn btn-outline-secondary" title="Anular">
+                                <i class="bi bi-slash-circle me-1"></i>Anular
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Información del Residente Deudor -->
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 fw-semibold text-secondary"><i class="bi bi-person-vcard me-2"></i>Residente Responsable</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">Nombre:</span>
+                        <a href="{{ url_for('vecinos.detalle', id_vecino=deuda.vecino.id_vecino) }}" class="fw-bold text-dark text-decoration-none">
+                            {{ deuda.vecino.nombre_completo }}
+                        </a>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">Vivienda:</span>
+                        {% if deuda.vecino.casa %}
+                            <a href="{{ url_for('casas.detalle', id_casa=deuda.vecino.casa.id_casa) }}" class="badge bg-primary text-decoration-none">
+                                <i class="bi bi-house-door me-1"></i>Casa #{{ deuda.vecino.casa.numero_casa }}
+                            </a>
+                        {% else %}
+                            <span class="text-muted fst-italic">Sin casa asignada</span>
+                        {% endif %}
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">Teléfono:</span>
+                        <span class="text-dark">{{ deuda.vecino.telefono or 'No registrado' }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-muted">Correo:</span>
+                        <span class="text-dark">{{ deuda.vecino.correo or 'No registrado' }}</span>
+                    </li>
+                </ul>
+
+                <div class="mt-3 text-end">
+                    <a href="{{ url_for('vecinos.detalle', id_vecino=deuda.vecino.id_vecino) }}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-person-lines-fill me-1"></i>Ver Ficha del Residente
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if current_user.rol and current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] %}
+<!-- Modal Editar Deuda -->
+<div class="modal fade" id="modalEditarDeuda" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('deudas.editar', id_deuda=deuda.id_deuda) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square text-warning me-2"></i>Editar Deuda #{{ deuda.id_deuda }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Residente <span class="text-danger">*</span></label>
+                        <select class="form-select" name="id_vecino" required>
+                            {% for v in vecinos %}
+                            <option value="{{ v.id_vecino }}" {% if v.id_vecino == deuda.id_vecino %}selected{% endif %}>
+                                {{ v.nombre_completo }} {% if v.casa %}(Casa #{{ v.casa.numero_casa }}){% endif %}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Concepto <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="concepto" value="{{ deuda.concepto }}" required>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Monto (Q) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text">Q</span>
+                                <input type="number" step="0.01" min="0.01" class="form-control" name="monto" value="{{ deuda.monto }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Fecha</label>
+                            <input type="date" class="form-control" name="fecha" value="{{ deuda.fecha.strftime('%Y-%m-%d') }}">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Estado</label>
+                        <select class="form-select" name="estado">
+                            <option value="Pendiente" {% if deuda.estado == 'Pendiente' %}selected{% endif %}>Pendiente</option>
+                            <option value="Pagada" {% if deuda.estado == 'Pagada' %}selected{% endif %}>Pagada</option>
+                            <option value="Anulada" {% if deuda.estado == 'Anulada' %}selected{% endif %}>Anulada</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-warning text-dark fw-semibold"><i class="bi bi-save me-1"></i>Actualizar Deuda</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Eliminar Deuda -->
+<div class="modal fade" id="modalEliminarDeuda" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('deudas.eliminar', id_deuda=deuda.id_deuda) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i>Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro de que deseas eliminar la <strong>Deuda #{{ deuda.id_deuda }}</strong> correspondiente a <strong>{{ deuda.concepto }}</strong> por un monto de <strong>Q{{ "%.2f"|format(deuda.monto) }}</strong>?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger"><i class="bi bi-trash3-fill me-1"></i>Sí, Eliminar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

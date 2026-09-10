@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+
+{% block title %}Gestión de Vecinos{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-0"><i class="bi bi-people text-success me-2"></i>Gestión de Vecinos</h2>
+        <p class="text-muted mb-0">Directorio y control de residentes de la colonia</p>
+    </div>
+    {% if current_user.rol and current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] %}
+    <div>
+        <button type="button" class="btn btn-success shadow-sm" data-bs-toggle="modal" data-bs-target="#modalCrearVecino">
+            <i class="bi bi-person-plus-fill me-1"></i>Registrar Vecino
+        </button>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Filtros y Búsqueda -->
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('vecinos.index') }}" class="row g-2">
+            <div class="col-md-4">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" class="form-control" name="q" value="{{ busqueda }}" placeholder="Buscar por nombre, teléfono o correo...">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" name="casa_id">
+                    <option value="">-- Filtrar por Casa --</option>
+                    {% for c in casas %}
+                    <option value="{{ c.id_casa }}" {% if casa_filtro == c.id_casa|string %}selected{% endif %}>
+                        Casa #{{ c.numero_casa }} {% if c.manzana %}(Mz. {{ c.manzana }}){% endif %}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" name="familia_id">
+                    <option value="">-- Filtrar por Familia --</option>
+                    {% for f in familias %}
+                    <option value="{{ f.id_familia }}" {% if familia_filtro == f.id_familia|string %}selected{% endif %}>
+                        {{ f.nombre }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-primary flex-grow-1"><i class="bi bi-funnel-fill me-1"></i>Filtrar</button>
+                {% if busqueda or casa_filtro or familia_filtro %}
+                <a href="{{ url_for('vecinos.index') }}" class="btn btn-outline-secondary" title="Limpiar Filtros"><i class="bi bi-x-circle"></i></a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Tabla de Vecinos -->
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 fw-semibold text-secondary"><i class="bi bi-person-lines-fill me-2"></i>Residentes Registrados</h5>
+        <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2">Total: {{ total }} vecinos</span>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Nombre Completo</th>
+                        <th>Vivienda</th>
+                        <th>Núcleo Familiar</th>
+                        <th>Teléfono</th>
+                        <th>Correo Electrónico</th>
+                        <th class="text-end pe-4">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for v in vecinos %}
+                    <tr>
+                        <td class="ps-4">
+                            <div class="fw-bold text-dark fs-6">{{ v.nombre_completo }}</div>
+                            {% if v.usuario_cuenta %}
+                                <small class="text-primary"><i class="bi bi-person-check-fill me-1"></i>Usuario: {{ v.usuario_cuenta.usuario }}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if v.casa %}
+                                <a href="{{ url_for('casas.detalle', id_casa=v.casa.id_casa) }}" class="badge bg-primary-subtle text-primary border border-primary-subtle text-decoration-none">
+                                    <i class="bi bi-house-door me-1"></i>Casa #{{ v.casa.numero_casa }}
+                                </a>
+                            {% else %}
+                                <span class="text-muted fst-italic">Sin asignar</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if v.familia %}
+                                <a href="{{ url_for('familias.detalle', id_familia=v.familia.id_familia) }}" class="badge bg-info-subtle text-info-emphasis border border-info-subtle text-decoration-none">
+                                    <i class="bi bi-diagram-3 me-1"></i>{{ v.familia.nombre }}
+                                </a>
+                            {% else %}
+                                <span class="text-muted fst-italic">Sin familia</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if v.telefono %}
+                                <span><i class="bi bi-telephone text-muted me-1"></i>{{ v.telefono }}</span>
+                            {% else %}
+                                <span class="text-muted fst-italic">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if v.correo %}
+                                <span class="text-muted"><i class="bi bi-envelope me-1"></i>{{ v.correo }}</span>
+                            {% else %}
+                                <span class="text-muted fst-italic">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end pe-4">
+                            <a href="{{ url_for('vecinos.detalle', id_vecino=v.id_vecino) }}" class="btn btn-sm btn-outline-success">
+                                <i class="bi bi-person-badge me-1"></i>Ver Ficha
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">
+                            <i class="bi bi-inbox fs-2 d-block mb-2"></i>No se encontraron vecinos registrados con los filtros aplicados.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% if current_user.rol and current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] %}
+<!-- Modal Crear Vecino -->
+<div class="modal fade" id="modalCrearVecino" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('vecinos.crear') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-person-plus-fill text-success me-2"></i>Registrar Nuevo Vecino</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Nombres <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="nombres" placeholder="Ej. Juan Carlos" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Apellidos <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="apellidos" placeholder="Ej. Pérez Gómez" required>
+                        </div>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Teléfono</label>
+                            <input type="text" class="form-control" name="telefono" placeholder="Ej. 5555-1234">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Correo Electrónico</label>
+                            <input type="email" class="form-control" name="correo" placeholder="correo@ejemplo.com">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Casa Asignada</label>
+                        <select class="form-select" name="id_casa">
+                            <option value="">-- Sin Casa Asignada --</option>
+                            {% for c in casas %}
+                            <option value="{{ c.id_casa }}">
+                                Casa #{{ c.numero_casa }} {% if c.manzana %}(Mz. {{ c.manzana }}){% endif %}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Familia</label>
+                        <select class="form-select" name="id_familia">
+                            <option value="">-- Sin Familia Asignada --</option>
+                            {% for f in familias %}
+                            <option value="{{ f.id_familia }}">{{ f.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success"><i class="bi bi-save me-1"></i>Registrar Vecino</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -16,83 +16,93 @@
 <!-- Tarjetas de Métricas (KPIs) -->
 <div class="row g-3 mb-4">
     <div class="col-md-4 col-sm-6">
-        <div class="card shadow-sm border-0 border-start border-primary border-4 h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-muted fw-semibold mb-1">Total Casas</h6>
-                        <h3 class="fw-bold mb-0 text-primary">{{ total_casas }}</h3>
-                    </div>
-                    <div class="bg-primary-subtle text-primary p-3 rounded-circle">
-                        <i class="bi bi-house-door-fill fs-3"></i>
+        <a href="{{ url_for('casas.index') }}" class="text-decoration-none">
+            <div class="card shadow-sm border-0 border-start border-primary border-4 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted fw-semibold mb-1">Total Casas</h6>
+                            <h3 class="fw-bold mb-0 text-primary">{{ total_casas }}</h3>
+                        </div>
+                        <div class="bg-primary-subtle text-primary p-3 rounded-circle">
+                            <i class="bi bi-house-door-fill fs-3"></i>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
 
     <div class="col-md-4 col-sm-6">
-        <div class="card shadow-sm border-0 border-start border-success border-4 h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-muted fw-semibold mb-1">Vecinos Registrados</h6>
-                        <h3 class="fw-bold mb-0 text-success">{{ total_vecinos }}</h3>
-                    </div>
-                    <div class="bg-success-subtle text-success p-3 rounded-circle">
-                        <i class="bi bi-people-fill fs-3"></i>
+        <a href="{{ url_for('vecinos.index') }}" class="text-decoration-none">
+            <div class="card shadow-sm border-0 border-start border-success border-4 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted fw-semibold mb-1">Vecinos Registrados</h6>
+                            <h3 class="fw-bold mb-0 text-success">{{ total_vecinos }}</h3>
+                        </div>
+                        <div class="bg-success-subtle text-success p-3 rounded-circle">
+                            <i class="bi bi-people-fill fs-3"></i>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
 
     <div class="col-md-4 col-sm-6">
-        <div class="card shadow-sm border-0 border-start border-info border-4 h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-muted fw-semibold mb-1">Familias</h6>
-                        <h3 class="fw-bold mb-0 text-info">{{ total_familias }}</h3>
-                    </div>
-                    <div class="bg-info-subtle text-info p-3 rounded-circle">
-                        <i class="bi bi-diagram-3-fill fs-3"></i>
+        <a href="{{ url_for('familias.index') }}" class="text-decoration-none">
+            <div class="card shadow-sm border-0 border-start border-info border-4 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted fw-semibold mb-1">Familias</h6>
+                            <h3 class="fw-bold mb-0 text-info">{{ total_familias }}</h3>
+                        </div>
+                        <div class="bg-info-subtle text-info p-3 rounded-circle">
+                            <i class="bi bi-diagram-3-fill fs-3"></i>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
 
     <div class="col-md-6 col-sm-6">
-        <div class="card shadow-sm border-0 border-start border-warning border-4 h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-muted fw-semibold mb-1">Deudas Pendientes</h6>
-                        <h3 class="fw-bold mb-0 text-warning">{{ deudas_pendientes }}</h3>
-                    </div>
-                    <div class="bg-warning-subtle text-warning p-3 rounded-circle">
-                        <i class="bi bi-cash-stack fs-3"></i>
+        <a href="{{ url_for('deudas.index') }}" class="text-decoration-none">
+            <div class="card shadow-sm border-0 border-start border-warning border-4 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted fw-semibold mb-1">Deudas Pendientes</h6>
+                            <h3 class="fw-bold mb-0 text-warning">{{ deudas_pendientes }}</h3>
+                        </div>
+                        <div class="bg-warning-subtle text-warning p-3 rounded-circle">
+                            <i class="bi bi-cash-stack fs-3"></i>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
 
     <div class="col-md-6 col-sm-6">
-        <div class="card shadow-sm border-0 border-start border-danger border-4 h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-muted fw-semibold mb-1">Multas Pendientes</h6>
-                        <h3 class="fw-bold mb-0 text-danger">{{ multas_pendientes }}</h3>
-                    </div>
-                    <div class="bg-danger-subtle text-danger p-3 rounded-circle">
-                        <i class="bi bi-exclamation-octagon-fill fs-3"></i>
+        <a href="{{ url_for('multas.index') }}" class="text-decoration-none">
+            <div class="card shadow-sm border-0 border-start border-danger border-4 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted fw-semibold mb-1">Multas Pendientes</h6>
+                            <h3 class="fw-bold mb-0 text-danger">{{ multas_pendientes }}</h3>
+                        </div>
+                        <div class="bg-danger-subtle text-danger p-3 rounded-circle">
+                            <i class="bi bi-exclamation-octagon-fill fs-3"></i>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
 </div>
 
@@ -104,27 +114,27 @@
     <div class="card-body">
         <div class="row g-2">
             <div class="col-md-3 col-6">
-                <a href="#" class="btn btn-outline-primary w-100 py-3 text-center">
+                <a href="{{ url_for('casas.index') }}" class="btn btn-outline-primary w-100 py-3 text-center">
                     <i class="bi bi-plus-circle d-block fs-3 mb-1"></i>
-                    <span>Registrar Casa</span>
+                    <span>Gestionar Casas</span>
                 </a>
             </div>
             <div class="col-md-3 col-6">
-                <a href="#" class="btn btn-outline-success w-100 py-3 text-center">
+                <a href="{{ url_for('vecinos.index') }}" class="btn btn-outline-success w-100 py-3 text-center">
                     <i class="bi bi-person-plus d-block fs-3 mb-1"></i>
-                    <span>Registrar Vecino</span>
+                    <span>Gestionar Vecinos</span>
                 </a>
             </div>
             <div class="col-md-3 col-6">
-                <a href="#" class="btn btn-outline-warning w-100 py-3 text-center">
-                    <i class="bi bi-receipt d-block fs-3 mb-1"></i>
-                    <span>Registrar Deuda</span>
+                <a href="{{ url_for('deudas.index') }}" class="btn btn-outline-warning w-100 py-3 text-center">
+                    <i class="bi bi-cash-stack d-block fs-3 mb-1"></i>
+                    <span>Control de Deudas</span>
                 </a>
             </div>
             <div class="col-md-3 col-6">
-                <a href="#" class="btn btn-outline-danger w-100 py-3 text-center">
+                <a href="{{ url_for('multas.index') }}" class="btn btn-outline-danger w-100 py-3 text-center">
                     <i class="bi bi-shield-exclamation d-block fs-3 mb-1"></i>
-                    <span>Registrar Multa</span>
+                    <span>Control de Multas</span>
                 </a>
             </div>
         </div>
