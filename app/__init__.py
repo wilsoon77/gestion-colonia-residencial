@@ -23,6 +23,7 @@ def create_app(config_name='development'):
     login_manager.login_message_category = 'warning'
 
     # Registro de Blueprints
+    from app.routes.public import public_bp
     from app.routes.auth import auth_bp
     from app.routes.dashboard import dashboard_bp
     from app.routes.usuarios import usuarios_bp
@@ -33,8 +34,12 @@ def create_app(config_name='development'):
     from app.routes.deudas import deudas_bp
     from app.routes.multas import multas_bp
 
+    # Landing Page Institucional Pública
+    app.register_blueprint(public_bp, url_prefix='/')
+
+    # Portal Administrativo y de Residentes
+    app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
     app.register_blueprint(auth_bp, url_prefix='/auth')
-    app.register_blueprint(dashboard_bp, url_prefix='/')
     app.register_blueprint(usuarios_bp, url_prefix='/usuarios')
     app.register_blueprint(casas_bp, url_prefix='/casas')
     app.register_blueprint(familias_bp, url_prefix='/familias')

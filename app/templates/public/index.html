@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Residencial Las Encinas de Fraijanes | Comunidad Exclusiva en Guatemala</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/logo_encinas.svg') }}">
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Custom Design System CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <!-- ==========================================================================
+         NAVBAR FLOTANTE GLASSMORPHISM
+         ========================================================================== -->
+    <!-- ==========================================================================
+         NAVBAR FLOTANTE TIPO CÁPSULA (ISLAND ARCHITECTURAL NAVBAR)
+         ========================================================================== -->
+    <header class="landing-navbar-container">
+        <nav class="navbar landing-navbar">
+            <div class="container-fluid px-2 px-md-3 d-flex align-items-center justify-content-between">
+                <!-- Brand Logo -->
+                <a class="navbar-brand d-flex align-items-center py-0 me-2 me-xl-4" href="{{ url_for('public.index') }}">
+                    <img src="{{ url_for('static', filename='img/logo_encinas_light.svg') }}" alt="Las Encinas de Fraijanes" class="navbar-brand-logo">
+                </a>
+
+                <!-- Desktop Navigation Links (Visible >= lg) -->
+                <ul class="navbar-nav d-none d-lg-flex flex-row mx-auto gap-1 gap-xl-2 align-items-center">
+                    <li class="nav-item">
+                        <a class="landing-nav-link" href="#amenidades">Amenidades</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="landing-nav-link" href="#sectores">Sectores</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="landing-nav-link" href="#seguridad">Seguridad</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="landing-nav-link" href="#portal">Portal Digital</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="landing-nav-link" href="#reglamento">Convivencia</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="landing-nav-link" href="#contacto">Contacto</a>
+                    </li>
+                </ul>
+
+                <!-- Desktop Action Buttons (Visible >= lg) -->
+                <div class="d-none d-lg-flex align-items-center gap-2">
+                    <a href="tel:+50223008800" class="nav-phone-pill d-none d-xxl-inline-flex" title="Llamar a Garita">
+                        <i class="bi bi-telephone text-warning me-1"></i>2300-8800
+                    </a>
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('dashboard.index') }}" class="nav-portal-btn">
+                            <i class="bi bi-speedometer2 me-1"></i>Mi Portal
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="nav-portal-btn">
+                            <i class="bi bi-lock-fill me-1"></i>Acceso Residentes
+                        </a>
+                    {% endif %}
+                </div>
+
+                <!-- Botón Hamburguesa Móvil (Visible < lg) -->
+                <button class="btn btn-landing-burger d-lg-none border-0 p-1 text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#landingOffcanvas" aria-controls="landingOffcanvas" aria-label="Abrir Menú de Navegación">
+                    <i class="bi bi-list fs-2 text-white"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ==========================================================================
+         MENÚ LATERAL DESPLEGABLE MÓVIL (OFFCANVAS LATERAL DERECHO)
+         ========================================================================== -->
+    <div class="offcanvas offcanvas-end landing-mobile-drawer" tabindex="-1" id="landingOffcanvas" aria-labelledby="landingOffcanvasLabel">
+        <div class="offcanvas-header p-3 border-bottom border-white border-opacity-10 d-flex align-items-center justify-content-between">
+            <a href="{{ url_for('public.index') }}" class="d-flex align-items-center text-decoration-none" data-bs-dismiss="offcanvas">
+                <img src="{{ url_for('static', filename='img/logo_encinas_light.svg') }}" alt="Las Encinas de Fraijanes" height="34">
+            </a>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+        </div>
+
+        <div class="offcanvas-body p-4 d-flex flex-column justify-content-between">
+            <div>
+                <div class="text-uppercase small fw-bold font-mono-currency text-warning mb-3" style="font-size: 11px; letter-spacing: 0.12em;">
+                    Explorar Comunidad
+                </div>
+                <ul class="nav flex-column gap-2 mb-4">
+                    <li class="nav-item">
+                        <a class="landing-drawer-link" href="#amenidades" data-bs-dismiss="offcanvas">
+                            <span class="drawer-link-num">01</span>
+                            <span>Amenidades & Entorno</span>
+                            <i class="bi bi-chevron-right ms-auto text-white-50"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="landing-drawer-link" href="#sectores" data-bs-dismiss="offcanvas">
+                            <span class="drawer-link-num">02</span>
+                            <span>Sectores & Topografía</span>
+                            <i class="bi bi-chevron-right ms-auto text-white-50"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="landing-drawer-link" href="#seguridad" data-bs-dismiss="offcanvas">
+                            <span class="drawer-link-num">03</span>
+                            <span>Seguridad Nivel 1</span>
+                            <i class="bi bi-chevron-right ms-auto text-white-50"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="landing-drawer-link" href="#portal" data-bs-dismiss="offcanvas">
+                            <span class="drawer-link-num">04</span>
+                            <span>Portal Digital Vecinal</span>
+                            <i class="bi bi-chevron-right ms-auto text-white-50"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="landing-drawer-link" href="#reglamento" data-bs-dismiss="offcanvas">
+                            <span class="drawer-link-num">05</span>
+                            <span>Convivencia & ASOVEC</span>
+                            <i class="bi bi-chevron-right ms-auto text-white-50"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="landing-drawer-link" href="#contacto" data-bs-dismiss="offcanvas">
+                            <span class="drawer-link-num">06</span>
+                            <span>Contacto & Visitas</span>
+                            <i class="bi bi-chevron-right ms-auto text-white-50"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="pt-3 border-top border-white border-opacity-10 d-flex flex-column gap-3">
+                <a href="tel:+50223008800" class="btn btn-encinas btn-encinas-outline-light w-100 justify-content-center">
+                    <i class="bi bi-telephone-fill text-warning me-2"></i>Garita: +(502) 2300-8800
+                </a>
+
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('dashboard.index') }}" class="btn btn-encinas btn-encinas-gold w-100 justify-content-center" data-bs-dismiss="offcanvas">
+                        <i class="bi bi-speedometer2 me-2"></i>Ir a mi Portal Interno
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-encinas btn-encinas-gold w-100 justify-content-center" data-bs-dismiss="offcanvas">
+                        <i class="bi bi-lock-fill me-2"></i>Acceso Residentes & Admin
+                    </a>
+                {% endif %}
+
+                <div class="text-center pt-2">
+                    <small class="text-white-50" style="font-size: 11px;">
+                        Km 18.5 Carretera a Fraijanes · Guatemala
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         HERO SECTION CINEMATOGRÁFICO
+         ========================================================================== -->
+    <header class="hero-residential">
+        <div class="container-xl">
+            <div class="row align-items-center">
+                <div class="col-lg-9 col-xl-8">
+                    <!-- Ubicación Integrada (Editorial / Arquitectónica) -->
+                    <div class="hero-location-bar">
+                        <span class="hero-location-tag">Ubicación Estratégica</span>
+                        <span class="hero-location-divider">/</span>
+                        <span class="hero-location-text">
+                            <i class="bi bi-geo-alt-fill text-warning"></i> Km 18.5 Carretera a Fraijanes, Guatemala
+                        </span>
+                        <span class="hero-location-divider d-none d-sm-inline">/</span>
+                        <span class="hero-location-tag d-none d-sm-inline">Altitud 1,820 msnm</span>
+                    </div>
+
+                    <!-- Titular de Autor -->
+                    <h1 class="hero-heading">
+                        Donde el bosque de encinos y la exclusividad convergen.
+                    </h1>
+
+                    <!-- Bajada Editorial -->
+                    <p class="hero-lead">
+                        Una comunidad residencial privada de baja densidad, con arquitectura contemporánea, pozo propio de agua, seguridad blindada 24/7 y más de 20,000 m² de reserva boscosa en el clima de montaña de Fraijanes.
+                    </p>
+
+                    <!-- Botones de Acción -->
+                    <div class="d-flex flex-wrap gap-3 mb-5">
+                        <a href="#contacto" class="btn btn-encinas btn-encinas-gold">
+                            <i class="bi bi-calendar2-check-fill me-1"></i>Agendar Visita Guiada
+                        </a>
+                        {% if current_user.is_authenticated %}
+                            <a href="{{ url_for('dashboard.index') }}" class="btn btn-encinas btn-encinas-outline-light">
+                                <i class="bi bi-speedometer2 me-1"></i>Ir a mi Panel de Control
+                            </a>
+                        {% else %}
+                            <a href="{{ url_for('auth.login') }}" class="btn btn-encinas btn-encinas-outline-light">
+                                <i class="bi bi-key-fill me-1 text-warning"></i>Acceso a Residentes y Administración
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fila de Estadísticas Rápidas con Altura Uniforme y Responsiva -->
+            <div class="hero-stats-grid">
+                <div class="hero-stat-card">
+                    <div class="hero-stat-icon">
+                        <i class="bi bi-droplet-half"></i>
+                    </div>
+                    <div class="hero-stat-info">
+                        <div class="hero-stat-value font-mono-currency">100%</div>
+                        <div class="hero-stat-label">Pozo Propio de Agua</div>
+                    </div>
+                </div>
+
+                <div class="hero-stat-card">
+                    <div class="hero-stat-icon">
+                        <i class="bi bi-shield-lock-fill"></i>
+                    </div>
+                    <div class="hero-stat-info">
+                        <div class="hero-stat-value font-mono-currency">24/7</div>
+                        <div class="hero-stat-label">Garita Blindada y RFID</div>
+                    </div>
+                </div>
+
+                <div class="hero-stat-card">
+                    <div class="hero-stat-icon">
+                        <i class="bi bi-tree-fill"></i>
+                    </div>
+                    <div class="hero-stat-info">
+                        <div class="hero-stat-value font-mono-currency">20,000 m²</div>
+                        <div class="hero-stat-label">Reserva Boscosa y Pinos</div>
+                    </div>
+                </div>
+
+                <div class="hero-stat-card">
+                    <div class="hero-stat-icon">
+                        <i class="bi bi-lightning-charge-fill"></i>
+                    </div>
+                    <div class="hero-stat-info">
+                        <div class="hero-stat-value font-mono-currency">100%</div>
+                        <div class="hero-stat-label">Cableado Subterráneo</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Alertas Flash Si Existen -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container-xl my-4">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm" role="alert">
+                        <i class="bi bi-check-circle-fill me-2"></i>{{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- ==========================================================================
+         SECCIÓN 1: AMENIDADES Y ESTILO DE VIDA (BENTO GRID ASIMÉTRICO)
+         ========================================================================== -->
+    <section id="amenidades" class="py-5 my-md-5">
+        <div class="container-xl">
+            <!-- Cabecera Editorial (Sin burbujas AI) -->
+            <div class="editorial-header-center">
+                <div class="editorial-kicker editorial-kicker-center">01 · Masterplan & Entorno Natural</div>
+                <h2 class="editorial-title">Amenidades concebidas para el bienestar de tu familia</h2>
+                <div class="editorial-gold-rule"></div>
+                <p class="editorial-desc">
+                    Espacios creados para desconectarse del ritmo de la ciudad y disfrutar de la naturaleza, el deporte de alta competencia y la convivencia en comunidad.
+                </p>
+            </div>
+
+            <!-- Bento Grid 12 Columnas Responsivo -->
+            <div class="bento-grid">
+                <!-- Bento Item 1: Casa Club (7 Cols) -->
+                <div class="bento-card bento-col-7">
+                    <div class="bento-card-media">
+                        <img src="{{ url_for('static', filename='img/clubhouse.jpg') }}" alt="Casa Club Los Encinos y Piscina Climatizada">
+                        <div class="bento-overlay-gradient"></div>
+                        <div class="position-absolute bottom-0 start-0 p-3 p-md-4 text-white">
+                            <span class="badge bg-warning text-dark fw-bold mb-2">
+                                <i class="bi bi-water me-1"></i>Piscina Infinity Climatizada
+                            </span>
+                            <h3 class="h4 fw-bold text-white mb-1">Casa Club Los Encinos</h3>
+                            <p class="text-white-50 small mb-0">Salón social para eventos privados, gimnasio panorámico y deck con vista al cañón de Fraijanes.</p>
+                        </div>
+                    </div>
+                    <div class="bento-card-content bg-white">
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-check2-circle text-success fs-5"></i>
+                                    <span class="small fw-semibold">Piscina climatizada con paneles solares</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-check2-circle text-success fs-5"></i>
+                                    <span class="small fw-semibold">Salón de recepciones con capacidad para 120 personas</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bento Item 2: Seguridad 24/7 (5 Cols) con Ancla #seguridad -->
+                <div id="seguridad" class="bento-card bento-col-5">
+                    <div class="bento-card-media">
+                        <img src="{{ url_for('static', filename='img/garita.jpg') }}" alt="Garita Blindada y Control de Acceso 24/7">
+                        <div class="bento-overlay-gradient"></div>
+                        <div class="position-absolute bottom-0 start-0 p-3 p-md-4 text-white">
+                            <span class="badge bg-success text-white fw-bold mb-2">
+                                <i class="bi bi-shield-check me-1"></i>Seguridad Nivel 1
+                            </span>
+                            <h3 class="h4 fw-bold text-white mb-1">Garita de Control Blindada</h3>
+                            <p class="text-white-50 small mb-0">Doble carril de ingreso para residentes y visitantes con lectura TAG y código QR.</p>
+                        </div>
+                    </div>
+                    <div class="bento-card-content bg-white">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-camera-video-fill text-primary fs-5"></i>
+                            <span class="small fw-semibold">Circuito cerrado de 32 cámaras IP con monitoreo continuo.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bento Item 3: Reserva Boscosa y Senderos (5 Cols) -->
+                <div class="bento-card bento-col-5">
+                    <div class="bento-card-media">
+                        <img src="{{ url_for('static', filename='img/parque.jpg') }}" alt="Senderos y Parque Ecológico">
+                        <div class="bento-overlay-gradient"></div>
+                        <div class="position-absolute bottom-0 start-0 p-3 p-md-4 text-white">
+                            <span class="badge bg-success text-white fw-bold mb-2">
+                                <i class="bi bi-flower1 me-1"></i>Naturaleza Viva
+                            </span>
+                            <h3 class="h4 fw-bold text-white mb-1">Sendero Ecológico de Encinos</h3>
+                            <p class="text-white-50 small mb-0">1.8 km de senderos con adoquín ecológico para caminatas, running y mascotas.</p>
+                        </div>
+                    </div>
+                    <div class="bento-card-content bg-white">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-heart-fill text-danger fs-5"></i>
+                            <span class="small fw-semibold">Área de juegos infantiles de madera y parque pet-friendly.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bento Item 4: Canchas y Deportes (7 Cols) -->
+                <div class="bento-card bento-col-7 d-flex flex-column justify-content-between p-4 bg-white">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="text-uppercase small fw-bold font-mono-currency text-secondary" style="letter-spacing: 0.12em; font-size: 11px;">
+                                <i class="bi bi-trophy-fill text-warning me-1"></i>Área Deportiva Reglamentaria
+                            </div>
+                            <span class="text-muted small">Uso exclusivo para residentes</span>
+                        </div>
+                        <h3 class="h4 fw-bold mb-2">Canchas de Pádel, Tenis y Polideportiva</h3>
+                        <p class="text-secondary small mb-4">
+                            Instalaciones deportivas reglamentarias con iluminación LED de alta potencia para partidos nocturnos, graderíos y sanitarios independientes.
+                        </p>
+                    </div>
+
+                    <div class="row g-3 pt-3 border-top">
+                        <div class="col-4 text-center">
+                            <div class="fw-bold fs-4 text-primary font-mono-currency">2</div>
+                            <small class="text-muted">Canchas de Pádel</small>
+                        </div>
+                        <div class="col-4 text-center border-start border-end">
+                            <div class="fw-bold fs-4 text-primary font-mono-currency">1</div>
+                            <small class="text-muted">Cancha de Tenis</small>
+                        </div>
+                        <div class="col-4 text-center">
+                            <div class="fw-bold fs-4 text-primary font-mono-currency">1</div>
+                            <small class="text-muted">Fútbol 5 y Básquetbol</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+         SECCIÓN 2: SECTORES Y MASTERPLAN
+         ========================================================================== -->
+    <section id="sectores" class="py-5 bg-white border-top border-bottom">
+        <div class="container-xl">
+            <div class="row align-items-end mb-5">
+                <div class="col-lg-8">
+                    <div class="editorial-kicker">02 · Lotificación & Topografía</div>
+                    <h2 class="editorial-title mb-2">Distribución por Sectores Residenciales</h2>
+                    <p class="text-muted mb-0">Cada sector fue planificado respetando la topografía natural y la vista panorámica a la cordillera.</p>
+                </div>
+                <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                    <div class="d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill bg-light border">
+                        <span class="text-success fw-bold font-mono-currency">{{ total_casas }}</span>
+                        <span class="text-muted small">Viviendas registradas en el sistema</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <!-- Sector 1 -->
+                <div class="col-md-4">
+                    <div class="sector-card h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 rounded-pill fw-bold">Manzanas A y B</span>
+                            <i class="bi bi-tree fs-4 text-success"></i>
+                        </div>
+                        <h4 class="fw-bold mb-2">Sector Los Encinos</h4>
+                        <p class="text-muted small mb-3">Lotes colindantes con la reserva ecológica. Máxima privacidad y menor tránsito vehicular.</p>
+                        <ul class="list-unstyled small text-secondary mb-0">
+                            <li class="mb-1"><i class="bi bi-check-lg text-success me-1"></i>Lotes desde 500 m² hasta 850 m²</li>
+                            <li class="mb-1"><i class="bi bi-check-lg text-success me-1"></i>Acceso directo a sendero de running</li>
+                            <li><i class="bi bi-check-lg text-success me-1"></i>Vistas al bosque nativo</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Sector 2 -->
+                <div class="col-md-4">
+                    <div class="sector-card h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1 rounded-pill fw-bold">Manzanas C y D</span>
+                            <i class="bi bi-house-door fs-4 text-primary"></i>
+                        </div>
+                        <h4 class="fw-bold mb-2">Sector La Arboleda</h4>
+                        <p class="text-muted small mb-3">Ubicación céntrica con proximidad inmediata a la Casa Club y las canchas deportivas.</p>
+                        <ul class="list-unstyled small text-secondary mb-0">
+                            <li class="mb-1"><i class="bi bi-check-lg text-primary me-1"></i>Lotes de 400 m² a 600 m²</li>
+                            <li class="mb-1"><i class="bi bi-check-lg text-primary me-1"></i>Ideal para familias con niños pequeños</li>
+                            <li><i class="bi bi-check-lg text-primary me-1"></i>Calles amplias con aceras arboladas</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Sector 3 -->
+                <div class="col-md-4">
+                    <div class="sector-card h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-1 rounded-pill fw-bold">Manzanas E y F</span>
+                            <i class="bi bi-clouds fs-4 text-warning"></i>
+                        </div>
+                        <h4 class="fw-bold mb-2">Sector Las Terrazas</h4>
+                        <p class="text-muted small mb-3">Sector con topografía escalonada que garantiza vistas despejadas a los volcanes de Agua y Pacaya.</p>
+                        <ul class="list-unstyled small text-secondary mb-0">
+                            <li class="mb-1"><i class="bi bi-check-lg text-warning me-1"></i>Lotes panorámicos exclusivos</li>
+                            <li class="mb-1"><i class="bi bi-check-lg text-warning me-1"></i>Mayor altura y brisa fresca de montaña</li>
+                            <li><i class="bi bi-check-lg text-warning me-1"></i>Boulevard principal con glorietas</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+         SECCIÓN 3: SPOTLIGHT DEL PORTAL RESIDENCIAL & ADMINISTRATIVO
+         ========================================================================== -->
+    <section id="portal" class="py-5 my-md-4">
+        <div class="container-xl">
+            <div class="portal-spotlight-box p-4 p-md-5">
+                <div class="row align-items-center g-5">
+                    <div class="col-lg-6">
+                        <div class="editorial-kicker mb-2" style="color: var(--brand-gold);">
+                            03 · Plataforma Web & Transparencia
+                        </div>
+                        <h2 class="display-6 fw-bold text-white mb-3">
+                            Portal Digital de Residentes & Administración
+                        </h2>
+                        <p class="text-white-50 mb-4">
+                            En Las Encinas no hay filas ni cobros en papel. Nuestra plataforma web residencial permite a cada vecino consultar su estado de cuenta en Quetzales, revisar cuotas de mantenimiento y gestionar su núcleo familiar con total transparencia.
+                        </p>
+
+                        <!-- Bullets de Características -->
+                        <div class="portal-feature-item">
+                            <div class="portal-icon-bullet">
+                                <i class="bi bi-cash-stack fs-5"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold text-white mb-1">Estado de Deudas y Cuotas al Día</h5>
+                                <p class="text-white-50 small mb-0">Monitorea tus cuotas mensuales en Quetzales (Q), historial de cobros cancelados y saldos pendientes en tiempo real.</p>
+                            </div>
+                        </div>
+
+                        <div class="portal-feature-item">
+                            <div class="portal-icon-bullet">
+                                <i class="bi bi-shield-exclamation fs-5"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold text-white mb-1">Registro Transparente de Sanciones</h5>
+                                <p class="text-white-50 small mb-0">Notificación clara y documentada de multas según el reglamento interno de convivencia comunitaria.</p>
+                            </div>
+                        </div>
+
+                        <div class="portal-feature-item">
+                            <div class="portal-icon-bullet">
+                                <i class="bi bi-people-fill fs-5"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold text-white mb-1">Padrón de Residencia y Familia</h5>
+                                <p class="text-white-50 small mb-0">Gestión de integrantes por vivienda, parentescos acreditados y contacto de emergencia para garita.</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-2">
+                            {% if current_user.is_authenticated %}
+                                <a href="{{ url_for('dashboard.index') }}" class="btn btn-encinas btn-encinas-gold btn-lg">
+                                    <i class="bi bi-arrow-right-circle-fill me-1"></i>Ingresar a mi Portal
+                                </a>
+                            {% else %}
+                                <a href="{{ url_for('auth.login') }}" class="btn btn-encinas btn-encinas-gold btn-lg">
+                                    <i class="bi bi-box-arrow-in-right me-1"></i>Acceder con mi Cuenta
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Mockup Visual del Portal -->
+                    <div class="col-lg-6">
+                        <div class="bg-white rounded-4 p-4 shadow-lg text-dark">
+                            <div class="d-flex justify-content-between align-items-center pb-3 border-bottom mb-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="bg-success text-white rounded-circle p-2" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-house-door-fill"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-dark small">Portal Residente · Vista Previa</div>
+                                        <div class="text-muted" style="font-size: 11px;">Casa #101-A · Familia Gómez</div>
+                                    </div>
+                                </div>
+                                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill small">
+                                    <i class="bi bi-check-circle me-1"></i>Solvente
+                                </span>
+                            </div>
+
+                            <!-- Tarjetas de Saldo Simulado -->
+                            <div class="row g-2 mb-3">
+                                <div class="col-6">
+                                    <div class="p-3 bg-light rounded-3 border">
+                                        <small class="text-muted d-block" style="font-size: 11px;">Mantenimiento Agosto</small>
+                                        <div class="fw-bold text-success font-mono-currency fs-5">Q 650.00</div>
+                                        <span class="badge bg-success" style="font-size: 10px;">Pagado</span>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="p-3 bg-light rounded-3 border">
+                                        <small class="text-muted d-block" style="font-size: 11px;">Multas Activas</small>
+                                        <div class="fw-bold text-dark font-mono-currency fs-5">Q 0.00</div>
+                                        <span class="badge bg-secondary" style="font-size: 10px;">Sin sanciones</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Vista de Integrantes -->
+                            <div class="p-3 bg-light rounded-3 border mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="fw-semibold small text-secondary"><i class="bi bi-people me-1"></i>Integrantes Registrados</span>
+                                    <span class="badge bg-primary rounded-pill" style="font-size: 10px;">3 Personas</span>
+                                </div>
+                                <div class="small text-muted d-flex flex-column gap-1" style="font-size: 12px;">
+                                    <div><i class="bi bi-person-fill text-primary me-1"></i>Carlos Roberto Gómez Estrada (Titular)</div>
+                                    <div><i class="bi bi-person text-secondary me-1"></i>Elena Sofía Martínez (Cónyuge)</div>
+                                    <div><i class="bi bi-person text-secondary me-1"></i>Mateo Gómez Martínez (Hijo)</div>
+                                </div>
+                            </div>
+
+                            <div class="text-center pt-2">
+                                <small class="text-muted" style="font-size: 11px;">
+                                    <i class="bi bi-lock-fill text-success me-1"></i>Datos sincronizados de forma segura en Neon PostgreSQL
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+         SECCIÓN 4: CONVIVENCIA Y REGLAMENTO ASOVEC
+         ========================================================================== -->
+    <section id="reglamento" class="py-5 bg-white border-top border-bottom">
+        <div class="container-xl">
+            <!-- Cabecera Editorial (Sin burbujas AI) -->
+            <div class="editorial-header-center">
+                <div class="editorial-kicker editorial-kicker-center">04 · Convivencia & Normativa Interna</div>
+                <h2 class="editorial-title">Reglamento de Convivencia y Armonía (ASOVEC)</h2>
+                <div class="editorial-gold-rule"></div>
+                <p class="editorial-desc">
+                    El orden y la plusvalía de Residencial Las Encinas se preservan gracias a un marco de normativas claras acordadas democráticamente por la Asociación de Vecinos.
+                </p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="p-4 rounded-4 bg-light border h-100">
+                        <div class="text-success fs-2 mb-2"><i class="bi bi-speedometer"></i></div>
+                        <h5 class="fw-bold mb-2">Velocidad Máxima 20 km/h</h5>
+                        <p class="text-muted small mb-0">Prioridad absoluta al peatón, niños en bicicleta y mascotas en todas las calles y avenidas.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="p-4 rounded-4 bg-light border h-100">
+                        <div class="text-primary fs-2 mb-2"><i class="bi bi-volume-mute-fill"></i></div>
+                        <h5 class="fw-bold mb-2">Horarios de Silencio</h5>
+                        <p class="text-muted small mb-0">Restricción de ruidos y música alta a partir de las 22:00 hrs de domingo a jueves y 00:00 hrs en fines de semana.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="p-4 rounded-4 bg-light border h-100">
+                        <div class="text-warning fs-2 mb-2"><i class="bi bi-trash3-fill"></i></div>
+                        <h5 class="fw-bold mb-2">Manejo de Desechos</h5>
+                        <p class="text-muted small mb-0">Recolección programada 3 veces por semana con clasificación obligatoria de orgánicos y reciclaje.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="p-4 rounded-4 bg-light border h-100">
+                        <div class="text-info fs-2 mb-2"><i class="bi bi-paint-bucket"></i></div>
+                        <h5 class="fw-bold mb-2">Manual de Fachadas</h5>
+                        <p class="text-muted small mb-0">Paleta arquitectónica uniforme para resguardar la estética y la plusvalía de todas las propiedades.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+         SECCIÓN 5: CONTACTO & SOLICITUD DE VISITA GUIADA
+         ========================================================================== -->
+    <section id="contacto" class="py-5 my-md-4">
+        <div class="container-xl">
+            <div class="row g-5 align-items-center">
+                <!-- Información Institucional -->
+                <div class="col-lg-5">
+                    <div class="editorial-kicker mb-2">05 · Visitas & Atención Personalizada</div>
+                    <h2 class="editorial-title mb-3">Conoce Residencial Las Encinas en persona</h2>
+                    <p class="text-muted mb-4">
+                        Agenda un recorrido privado con nuestro equipo administrativo para conocer la Casa Club, los senderos boscosos y las opciones de lotes y viviendas disponibles.
+                    </p>
+
+                    <div class="d-flex flex-column gap-3 mb-4">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="p-3 bg-white border rounded-circle text-primary">
+                                <i class="bi bi-geo-alt-fill fs-5"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold small">Ubicación</div>
+                                <div class="text-muted small">Km 18.5 Carretera a Fraijanes, Guatemala</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="p-3 bg-white border rounded-circle text-primary">
+                                <i class="bi bi-telephone-fill fs-5"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold small">Teléfono / Garita</div>
+                                <div class="text-muted small">+(502) 2300-8800 · +(502) 5544-3322</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="p-3 bg-white border rounded-circle text-primary">
+                                <i class="bi bi-envelope-fill fs-5"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold small">Correo Administrativo</div>
+                                <div class="text-muted small">administracion@lasencinasfraijanes.gt</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulario -->
+                <div class="col-lg-7">
+                    <div class="card-encinas p-4 p-md-5">
+                        <h4 class="fw-bold mb-3">Solicitar Información o Agendar Visita</h4>
+                        <p class="text-muted small mb-4">Completa tus datos y la administración se pondrá en contacto contigo en menos de 24 horas.</p>
+
+                        <form method="POST" action="{{ url_for('public.contacto') }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold">Nombre y Apellidos <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="nombre" placeholder="Ej. Juan Carlos Méndez" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold">Teléfono de Contacto <span class="text-danger">*</span></label>
+                                    <input type="tel" class="form-control" name="telefono" placeholder="Ej. 5555-1234" required>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold">Correo Electrónico</label>
+                                    <input type="email" class="form-control" name="correo" placeholder="correo@ejemplo.com">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold">Motivo de Interés</label>
+                                    <select class="form-select" name="motivo">
+                                        <option value="Agendar Visita Guiada" selected>Agendar Visita Guiada</option>
+                                        <option value="Información sobre Lotes">Información sobre Lotes y Casas</option>
+                                        <option value="Consulta de Residente">Soy Residente (Consulta Administrativa)</option>
+                                        <option value="Reglamento y Cuotas">Reglamento ASOVEC y Cuotas</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-encinas btn-encinas-primary w-100 py-3 mt-2">
+                                <i class="bi bi-send-fill me-1"></i>Enviar Solicitud
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+         FOOTER INSTITUCIONAL
+         ========================================================================== -->
+    <footer class="site-footer pt-5 pb-4">
+        <div class="container-xl">
+            <div class="row g-4 pb-4 border-bottom border-secondary border-opacity-25">
+                <div class="col-lg-4">
+                    <img src="{{ url_for('static', filename='img/logo_encinas_light.svg') }}" alt="Las Encinas de Fraijanes" height="42" class="mb-3">
+                    <p class="small text-white-50 mb-3">
+                        Comunidad residencial de montaña en Fraijanes, Guatemala. Seguridad, naturaleza y administración transparente para todas nuestras familias.
+                    </p>
+                    <div class="d-flex gap-2">
+                        <span class="badge bg-secondary bg-opacity-25 text-white-50 font-mono-currency">NIT: 9845120-4</span>
+                        <span class="badge bg-secondary bg-opacity-25 text-white-50">ASOVEC No. 44-2024</span>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-3 col-lg-2">
+                    <h6 class="text-white fw-bold mb-3 small text-uppercase" style="letter-spacing: 0.1em;">Navegación</h6>
+                    <ul class="list-unstyled small d-flex flex-column gap-2 mb-0">
+                        <li><a href="#amenidades">Amenidades</a></li>
+                        <li><a href="#sectores">Sectores</a></li>
+                        <li><a href="#seguridad">Seguridad 24/7</a></li>
+                        <li><a href="#portal">Portal Digital</a></li>
+                        <li><a href="#reglamento">Reglamento</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-6 col-md-3 col-lg-3">
+                    <h6 class="text-white fw-bold mb-3 small text-uppercase" style="letter-spacing: 0.1em;">Portal Interno</h6>
+                    <ul class="list-unstyled small d-flex flex-column gap-2 mb-0">
+                        {% if current_user.is_authenticated %}
+                            <li><a href="{{ url_for('dashboard.index') }}" class="text-warning fw-semibold"><i class="bi bi-speedometer2 me-1"></i>Ir al Dashboard</a></li>
+                            <li><a href="{{ url_for('auth.logout') }}"><i class="bi bi-box-arrow-right me-1"></i>Cerrar Sesión</a></li>
+                        {% else %}
+                            <li><a href="{{ url_for('auth.login') }}" class="text-warning fw-semibold"><i class="bi bi-lock-fill me-1"></i>Ingresar a mi Cuenta</a></li>
+                            <li><a href="{{ url_for('auth.login') }}"><i class="bi bi-shield-lock me-1"></i>Acceso Administrativo</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <div class="col-lg-3">
+                    <h6 class="text-white fw-bold mb-3 small text-uppercase" style="letter-spacing: 0.1em;">Ubicación & Contacto</h6>
+                    <p class="small text-white-50 mb-1">
+                        <i class="bi bi-geo-alt-fill text-warning me-1"></i>Km 18.5 Carretera a Fraijanes, Guatemala.
+                    </p>
+                    <p class="small text-white-50 mb-1">
+                        <i class="bi bi-telephone-fill text-warning me-1"></i>+(502) 2300-8800
+                    </p>
+                    <p class="small text-white-50">
+                        <i class="bi bi-clock-fill text-warning me-1"></i>Garita abierta las 24 horas, los 365 días del año.
+                    </p>
+                </div>
+            </div>
+
+            <div class="d-flex flex-wrap justify-content-between align-items-center pt-4 small text-white-50">
+                <div>&copy; 2026 Residencial Las Encinas de Fraijanes. Todos los derechos reservados.</div>
+                <div>Desarrollado para Asociación de Vecinos (ASOVEC) · Guatemala</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5.3 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

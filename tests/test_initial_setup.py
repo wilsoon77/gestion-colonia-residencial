@@ -16,6 +16,13 @@ def test_roles_creation(app):
         assert 'Usuario de Consulta' in nombres
 
 
+def test_landing_page_loads(client):
+    """Verifica que la landing page pública responda con código 200."""
+    response = client.get('/')
+    assert response.status_code == 200
+    assert b'Las Encinas' in response.data
+
+
 def test_login_page_loads(client):
     """Verifica que la página de login responda con código 200."""
     response = client.get('/auth/login')
@@ -24,7 +31,7 @@ def test_login_page_loads(client):
 
 
 def test_dashboard_redirects_unauthenticated(client):
-    """Verifica que el dashboard redirija a login a usuarios no autenticados."""
-    response = client.get('/', follow_redirects=False)
+    """Verifica que el dashboard administrativo redirija a login a usuarios no autenticados."""
+    response = client.get('/dashboard/', follow_redirects=False)
     assert response.status_code == 302
     assert '/auth/login' in response.headers['Location']

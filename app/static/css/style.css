@@ -1,38 +1,1314 @@
-/* Estilos personalizados para el sistema */
+/* ==========================================================================
+   RESIDENCIAL LAS ENCINAS DE FRAIJANES - SISTEMA DE DISEÑO & TOKENS
+   Arquitectura Biofílica & Residencial de Alta Gama (Guatemala)
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600;1,700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+:root {
+    /* Bootstrap 5 Color System Overrides (Purging Legacy Bootstrap Blue) */
+    --bs-primary: #143828;
+    --bs-primary-rgb: 20, 56, 40;
+    --bs-primary-bg-subtle: #EBF3EE;
+    --bs-primary-border-subtle: #CBD5CE;
+    --bs-primary-text-emphasis: #0D261B;
+    
+    --bs-success: #2D6A4F;
+    --bs-success-rgb: 45, 106, 79;
+    --bs-success-bg-subtle: #DEF7EC;
+    --bs-success-border-subtle: #BCF0DA;
+    --bs-success-text-emphasis: #03543F;
+
+    --bs-warning: #C28E3A;
+    --bs-warning-rgb: 194, 142, 58;
+    --bs-warning-bg-subtle: #FAF4E8;
+    --bs-warning-border-subtle: #F3E5CB;
+    --bs-warning-text-emphasis: #7A5318;
+
+    --bs-link-color: #1E503A;
+    --bs-link-hover-color: #0D261B;
+    --bs-border-color: #E2E8E4;
+
+    /* Paleta Cromática Primaria - Bosque de Montaña de Guatemala */
+    --brand-primary: #143828;
+    --brand-primary-dark: #0D261B;
+    --brand-primary-light: #1E503A;
+    --brand-sage: #2D6A4F;
+    --brand-sage-light: #EBF3EE;
+    --brand-gold: #C28E3A;
+    --brand-gold-dark: #A17126;
+    --brand-gold-light: #FAF4E8;
+    
+    /* Superficies y Neutros Orgánicos */
+    --surface-base: #F7F8F6;
+    --surface-card: #FFFFFF;
+    --surface-muted: #EFF2EF;
+    --surface-dark: #0F1D17;
+    
+    /* Tipografía & Textos con Alto Contraste */
+    --text-primary: #121C18;
+    --text-secondary: #3B4B44;
+    --text-muted: #6E7E76;
+    --text-inverse: #FFFFFF;
+    
+    /* Bordes y Líneas Refinadas */
+    --border-subtle: #E2E8E4;
+    --border-strong: #CBD5CE;
+    --border-gold: rgba(194, 142, 58, 0.35);
+
+    /* Familias Tipográficas */
+    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-mono: 'Space Grotesk', monospace;
+    
+    /* Elevaciones y Sombras Entintadas en Verde Bosque */
+    --shadow-xs: 0 1px 3px rgba(20, 56, 40, 0.05);
+    --shadow-sm: 0 4px 12px -2px rgba(20, 56, 40, 0.06), 0 2px 4px -1px rgba(20, 56, 40, 0.03);
+    --shadow-md: 0 12px 28px -4px rgba(20, 56, 40, 0.08), 0 4px 10px -2px rgba(20, 56, 40, 0.04);
+    --shadow-lg: 0 24px 50px -10px rgba(20, 56, 40, 0.12), 0 8px 20px -4px rgba(20, 56, 40, 0.05);
+    --shadow-gold: 0 8px 24px -4px rgba(194, 142, 58, 0.3);
+
+    /* Radios de Borde Consistentes */
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --radius-pill: 9999px;
+
+    /* Microfísica y Transiciones */
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --transition-fast: 0.18s var(--ease-out);
+    --transition-smooth: 0.3s var(--ease-out);
+}
+
+/* ==========================================================================
+   RESET & TIPOGRAFÍA BASE
+   ========================================================================== */
+html {
+    scroll-behavior: smooth;
+    max-width: 100vw;
+    overflow-x: clip;
+}
+
 body {
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: var(--font-sans);
+    background-color: var(--surface-base);
+    color: var(--text-primary);
+    line-height: 1.6;
+    max-width: 100vw;
+    overflow-x: clip;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-.navbar-brand {
-    letter-spacing: 0.5px;
+/* ==========================================================================
+   BOOTSTRAP CLASS OVERRIDES (ELIMINATING LEGACY BLUE EVERYWHERE)
+   ========================================================================== */
+.btn-primary {
+    background-color: var(--brand-primary) !important;
+    border-color: var(--brand-primary) !important;
+    color: #FFFFFF !important;
+    box-shadow: var(--shadow-xs);
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    transition: all var(--transition-fast);
 }
 
-.card {
-    border-radius: 0.6rem;
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+    background-color: var(--brand-primary-dark) !important;
+    border-color: var(--brand-primary-dark) !important;
+    color: #FFFFFF !important;
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
 }
 
-.btn {
-    border-radius: 0.5rem;
+.btn-outline-primary {
+    color: var(--brand-primary) !important;
+    border-color: var(--brand-primary) !important;
+    background-color: transparent !important;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    transition: all var(--transition-fast);
 }
 
-/* Tarjetas Interactivas con Clic */
+.btn-outline-primary:hover, .btn-outline-primary:focus, .btn-outline-primary:active {
+    background-color: var(--brand-primary) !important;
+    border-color: var(--brand-primary) !important;
+    color: #FFFFFF !important;
+    box-shadow: var(--shadow-xs);
+}
+
+.bg-primary {
+    background-color: var(--brand-primary) !important;
+    color: #FFFFFF !important;
+}
+
+.text-primary {
+    color: var(--brand-primary) !important;
+}
+
+.bg-primary-subtle {
+    background-color: var(--brand-sage-light) !important;
+    color: var(--brand-primary) !important;
+}
+
+.border-primary {
+    border-color: var(--brand-primary) !important;
+}
+
+.border-primary-subtle {
+    border-color: #CBD5CE !important;
+}
+
+.text-primary-emphasis {
+    color: var(--brand-primary-dark) !important;
+}
+
+.badge.bg-primary {
+    background-color: var(--brand-primary) !important;
+    color: #FFFFFF !important;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--brand-primary) !important;
+    border-color: var(--brand-primary) !important;
+    color: #FFFFFF !important;
+}
+
+.pagination .page-link {
+    color: var(--brand-primary);
+}
+
+.pagination .page-link:hover {
+    color: var(--brand-primary-dark);
+    background-color: var(--brand-sage-light);
+}
+
+.table thead th {
+    background-color: #F0F4F1;
+    color: var(--brand-primary);
+    font-weight: 700;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 2px solid var(--border-strong);
+}
+
+/* Anchor offset for fixed header */
+#amenidades, #sectores, #seguridad, #portal, #reglamento, #contacto {
+    scroll-margin-top: 96px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.025em;
+}
+
+.font-mono-currency {
+    font-family: var(--font-mono);
+    letter-spacing: -0.02em;
+}
+
+/* ==========================================================================
+   COMPONENTES UI & BOTONES DE AUTOR
+   ========================================================================== */
+.btn-encinas {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0.65rem 1.4rem;
+    border-radius: var(--radius-pill);
+    transition: all var(--transition-fast);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 1px solid transparent;
+}
+
+.btn-encinas:active {
+    transform: scale(0.98);
+}
+
+.btn-encinas-primary {
+    background-color: var(--brand-primary);
+    color: #FFFFFF;
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-encinas-primary:hover {
+    background-color: var(--brand-primary-dark);
+    color: #FFFFFF;
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+}
+
+.btn-encinas-gold {
+    background-color: var(--brand-gold);
+    color: #FFFFFF;
+    box-shadow: var(--shadow-gold);
+}
+
+.btn-encinas-gold:hover {
+    background-color: var(--brand-gold-dark);
+    color: #FFFFFF;
+    transform: translateY(-1px);
+}
+
+.btn-encinas-outline {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(8px);
+    color: var(--brand-primary);
+    border: 1px solid var(--border-strong);
+}
+
+.btn-encinas-outline:hover {
+    background: #FFFFFF;
+    color: var(--brand-primary-dark);
+    border-color: var(--brand-primary);
+    transform: translateY(-1px);
+}
+
+.btn-encinas-outline-light {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(10px);
+    color: #FFFFFF;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.btn-encinas-outline-light:hover {
+    background: rgba(255, 255, 255, 0.25);
+    color: #FFFFFF;
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-1px);
+}
+
+/* Tarjetas y Contenedores */
+.card-encinas {
+    background-color: var(--surface-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+.card-encinas:hover {
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-md);
+}
+
 .card-clickable {
     cursor: pointer;
-    transition: transform 0.18s ease-in-out, box-shadow 0.18s ease-in-out;
     text-decoration: none !important;
 }
 
 .card-clickable:hover {
     transform: translateY(-3px);
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.12) !important;
+    box-shadow: var(--shadow-md) !important;
+    border-color: var(--brand-gold) !important;
 }
 
-/* Filas de tabla interactivas */
 .table-clickable-row {
     cursor: pointer;
-    transition: background-color 0.15s ease-in-out;
+    transition: background-color var(--transition-fast);
 }
 
 .table-clickable-row:hover {
-    background-color: rgba(13, 110, 253, 0.05) !important;
+    background-color: var(--brand-sage-light) !important;
 }
+
+/* Badges Semánticos Redondeados */
+.badge-encinas-pill {
+    padding: 0.35rem 0.85rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border-radius: var(--radius-pill);
+    letter-spacing: 0.02em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.badge-encinas-success {
+    background-color: #DEF7EC;
+    color: #03543F;
+    border: 1px solid #BCF0DA;
+}
+
+.badge-encinas-warning {
+    background-color: #FEF08A;
+    color: #713F12;
+    border: 1px solid #FDE047;
+}
+
+.badge-encinas-danger {
+    background-color: #FDE8E8;
+    color: #9B1C1C;
+    border: 1px solid #FBD5D5;
+}
+
+.badge-encinas-info {
+    background-color: #E1EFFE;
+    color: #1E429F;
+    border: 1px solid #C3DDFD;
+}
+
+/* ==========================================================================
+   LANDING PAGE ESPECÍFICA - SECCIONES
+   ========================================================================== */
+
+/* ==========================================================================
+   NAVBAR FLOTANTE TIPO CÁPSULA (FLOATING ISLAND ARCHITECTURAL NAVBAR)
+   ========================================================================== */
+.landing-navbar-container {
+    position: fixed;
+    top: 22px;
+    left: 0;
+    right: 0;
+    z-index: 1050;
+    padding: 0 1.25rem;
+    pointer-events: none;
+}
+
+.landing-navbar {
+    pointer-events: auto;
+    max-width: 1240px;
+    margin: 0 auto;
+    background: rgba(12, 28, 20, 0.90) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(194, 142, 58, 0.35);
+    border-radius: 9999px;
+    padding: 0.72rem 1.65rem;
+    box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.52), 0 0 0 1px rgba(255, 255, 255, 0.08);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.navbar-brand-logo {
+    height: 38px;
+    width: auto;
+}
+
+/* Enlaces del Navbar: Tipografía limpia, sin iconos ruidosos, jamás hacen wrap */
+.landing-nav-link {
+    color: rgba(255, 255, 255, 0.84) !important;
+    font-size: 0.89rem;
+    font-weight: 500;
+    letter-spacing: 0.015em;
+    padding: 0.52rem 0.92rem !important;
+    border-radius: 9999px;
+    transition: all var(--transition-fast);
+    text-decoration: none;
+    white-space: nowrap !important;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1.2;
+}
+
+.landing-nav-link:hover {
+    color: #FFFFFF !important;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.landing-nav-link.active {
+    color: #FFFFFF !important;
+    background: rgba(194, 142, 58, 0.22);
+    border: 1px solid rgba(194, 142, 58, 0.4);
+}
+
+/* Teléfono PBX en Navbar */
+.nav-phone-pill {
+    color: rgba(255, 255, 255, 0.88);
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    padding: 0.5rem 1.05rem;
+    border-radius: 9999px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap !important;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1.2;
+    transition: all var(--transition-fast);
+}
+
+.nav-phone-pill:hover {
+    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.12);
+    border-color: var(--brand-gold);
+}
+
+/* Botón CTA Portal en Navbar */
+.nav-portal-btn {
+    color: #FFFFFF !important;
+    background: linear-gradient(135deg, #C28E3A 0%, #A17126 100%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 0.54rem 1.35rem;
+    border-radius: 9999px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap !important;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1.2;
+    box-shadow: 0 6px 18px rgba(194, 142, 58, 0.4);
+    transition: all var(--transition-fast);
+}
+
+.nav-portal-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(194, 142, 58, 0.55);
+    color: #FFFFFF !important;
+}
+
+.nav-portal-btn:active {
+    transform: translateY(0);
+}
+
+/* Botón Hamburguesa de Landing en Móvil */
+.btn-landing-burger {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.22) !important;
+    border-radius: 12px;
+    width: 42px;
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.btn-landing-burger:hover {
+    background: rgba(255, 255, 255, 0.16);
+    border-color: var(--brand-gold) !important;
+}
+
+/* Menú Lateral Desplegable Móvil (Drawer Offcanvas Derecho) */
+.landing-mobile-drawer {
+    background: rgba(11, 28, 20, 0.98) !important;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-left: 1px solid rgba(194, 142, 58, 0.3) !important;
+    color: #FFFFFF;
+    width: 320px !important;
+    max-width: 86vw !important;
+    box-shadow: -10px 0 35px rgba(0, 0, 0, 0.55);
+}
+
+.landing-drawer-link {
+    display: flex;
+    align-items: center;
+    padding: 0.72rem 1rem;
+    color: rgba(255, 255, 255, 0.88);
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    font-size: 0.94rem;
+    transition: all var(--transition-fast);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.landing-drawer-link:hover, .landing-drawer-link:focus {
+    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(194, 142, 58, 0.4);
+    transform: translateX(4px);
+}
+
+.drawer-link-num {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--brand-gold);
+    font-weight: 700;
+    margin-right: 0.75rem;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    background: rgba(194, 142, 58, 0.15);
+}
+
+/* Adaptación Responsiva para Móviles */
+@media (max-width: 991.98px) {
+    .landing-navbar-container {
+        top: 12px;
+        padding: 0 0.85rem;
+    }
+    .landing-navbar {
+        border-radius: 9999px;
+        padding: 0.55rem 1.15rem;
+    }
+    .navbar-brand-logo {
+        height: 32px;
+    }
+}
+
+/* Hero Section */
+.hero-residential {
+    position: relative;
+    min-height: 94dvh;
+    display: flex;
+    align-items: center;
+    background-image: linear-gradient(
+        180deg,
+        rgba(13, 38, 27, 0.74) 0%,
+        rgba(20, 56, 40, 0.68) 50%,
+        rgba(15, 29, 23, 0.94) 100%
+    ), url('../img/hero_encinas.jpg');
+    background-size: cover;
+    background-position: center 30%;
+    color: #FFFFFF;
+    padding-top: 8.5rem;
+    padding-bottom: 4rem;
+}
+
+@media (max-width: 991.98px) {
+    .hero-residential {
+        padding-top: 6.25rem;
+    }
+}
+
+/* Minimalist Architectural Location Bar (Replacing AI Eyebrow Bubble) */
+.hero-location-bar {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    background: rgba(13, 34, 25, 0.85);
+    border: 1px solid rgba(194, 142, 58, 0.35);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 8px;
+    padding: 0.45rem 1.1rem;
+    margin-bottom: 1.5rem;
+}
+
+.hero-location-tag {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brand-gold);
+}
+
+.hero-location-divider {
+    color: rgba(255, 255, 255, 0.28);
+    font-weight: 300;
+}
+
+.hero-location-text {
+    font-size: 0.86rem;
+    color: rgba(255, 255, 255, 0.92);
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.hero-heading {
+    font-size: clamp(2.3rem, 5vw, 4.3rem);
+    font-weight: 800;
+    line-height: 1.08;
+    color: #FFFFFF;
+    letter-spacing: -0.035em;
+    margin-bottom: 1.25rem;
+}
+
+.hero-lead {
+    font-size: clamp(1.02rem, 1.35vw, 1.22rem);
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 60ch;
+    font-weight: 400;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+/* Grid de Estadísticas con Altura Uniforme y Responsiva */
+.hero-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    align-items: stretch;
+}
+
+.hero-stat-card {
+    height: 100%;
+    min-height: 94px;
+    display: flex;
+    align-items: center;
+    gap: 0.95rem;
+    padding: 1rem 1.2rem;
+    background: rgba(13, 38, 27, 0.82);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+}
+
+.hero-stat-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--brand-gold);
+    box-shadow: var(--shadow-gold);
+}
+
+.hero-stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: rgba(194, 142, 58, 0.16);
+    color: var(--brand-gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    flex-shrink: 0;
+}
+
+.hero-stat-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+}
+
+.hero-stat-value {
+    font-size: 1.22rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    line-height: 1.15;
+}
+
+.hero-stat-label {
+    font-size: 0.81rem;
+    color: rgba(255, 255, 255, 0.72);
+    line-height: 1.3;
+    margin-top: 2px;
+}
+
+@media (max-width: 991.98px) {
+    .hero-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.85rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .hero-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.65rem;
+    }
+    .hero-stat-card {
+        padding: 0.85rem 0.9rem;
+        gap: 0.7rem;
+        min-height: 84px;
+    }
+    .hero-stat-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 1.35rem;
+    }
+    .hero-stat-value {
+        font-size: 1.05rem;
+    }
+    .hero-stat-label {
+        font-size: 0.74rem;
+    }
+}
+
+/* ==========================================================================
+   EDITORIAL SECTION HEADERS (REPLACING AI PILL BUBBLE PATTERNS)
+   ========================================================================== */
+.editorial-header-center {
+    text-align: center;
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 3.5rem;
+}
+
+.editorial-kicker {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--brand-gold-dark);
+    margin-bottom: 0.65rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.editorial-kicker-center {
+    display: flex;
+    justify-content: center;
+}
+
+.editorial-kicker-center::before, .editorial-kicker-center::after {
+    content: "";
+    display: inline-block;
+    width: 24px;
+    height: 1px;
+    background-color: var(--brand-gold);
+    opacity: 0.7;
+}
+
+.editorial-title {
+    font-size: clamp(1.85rem, 3.2vw, 2.5rem);
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.75rem;
+}
+
+.editorial-desc {
+    font-size: 1.02rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0 auto;
+}
+
+.editorial-gold-rule {
+    width: 44px;
+    height: 2px;
+    background-color: var(--brand-gold);
+    margin: 1.15rem auto 1.15rem auto;
+}
+
+/* Bento Grid Asimétrico de Amenidades (Mobile-first responsive) */
+.bento-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+}
+
+@media (min-width: 992px) {
+    .bento-grid {
+        grid-template-columns: repeat(12, 1fr);
+        gap: 1.5rem;
+    }
+    .bento-col-7 {
+        grid-column: span 7;
+    }
+    .bento-col-5 {
+        grid-column: span 5;
+    }
+}
+
+.bento-card {
+    position: relative;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background-color: var(--surface-card);
+    border: 1px solid var(--border-subtle);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-smooth), box-shadow var(--transition-smooth), border-color var(--transition-smooth);
+}
+
+.bento-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--brand-gold);
+}
+
+.bento-card-media {
+    position: relative;
+    height: 240px;
+    overflow: hidden;
+}
+
+@media (min-width: 768px) {
+    .bento-card-media {
+        height: 320px;
+    }
+}
+
+.bento-card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s var(--ease-out);
+}
+
+.bento-card:hover .bento-card-media img {
+    transform: scale(1.04);
+}
+
+.bento-overlay-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 40%, rgba(13, 38, 27, 0.85) 100%);
+}
+
+.bento-card-content {
+    padding: 1.4rem;
+}
+
+@media (min-width: 768px) {
+    .bento-card-content {
+        padding: 1.75rem;
+    }
+}
+
+/* Tarjetas de Sectores y Masterplan */
+.sector-card {
+    background: var(--surface-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 1.75rem;
+    box-shadow: var(--shadow-xs);
+    transition: all var(--transition-fast);
+}
+
+.sector-card:hover {
+    border-color: var(--brand-sage);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+/* Sección Spotlight de Portal de Residentes */
+.portal-spotlight-box {
+    background: linear-gradient(135deg, #143828 0%, #0E291D 100%);
+    border-radius: var(--radius-lg);
+    color: #FFFFFF;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(194, 142, 58, 0.25);
+    box-shadow: var(--shadow-lg);
+}
+
+.portal-feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.portal-icon-bullet {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: rgba(194, 142, 58, 0.2);
+    border: 1px solid var(--brand-gold);
+    color: var(--brand-gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* ==========================================================================
+   PORTAL INTERNO ADMINISTRATIVO & DE RESIDENTES (LATERAL SIDEBAR & TOPBAR)
+   ========================================================================== */
+
+/* Topbar Móvil (< 992px) */
+.admin-mobile-topbar {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1025;
+    height: 58px;
+    background: rgba(11, 28, 20, 0.96);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(194, 142, 58, 0.25);
+    display: flex;
+    align-items: center;
+}
+
+.btn-admin-burger {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16) !important;
+    border-radius: 8px;
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.btn-admin-burger:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: var(--brand-gold) !important;
+}
+
+/* Contenedor Flex de la App Administrativa */
+.admin-app-layout {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+    position: relative;
+}
+
+/* Barra Lateral: Docked permanente en Desktop (>= 992px) y Offcanvas en Móvil (< 992px) */
+.admin-sidebar {
+    background: #0B1C14 !important;
+    color: #FFFFFF;
+    border-right: 1px solid rgba(194, 142, 58, 0.2) !important;
+    z-index: 1035;
+}
+
+@media (min-width: 992px) {
+    .admin-sidebar {
+        width: 260px !important;
+        min-width: 260px !important;
+        max-width: 260px !important;
+        position: fixed !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        height: 100vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        border-right: 1px solid rgba(194, 142, 58, 0.22) !important;
+        z-index: 1030 !important;
+        transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1), min-width 0.25s cubic-bezier(0.16, 1, 0.3, 1), max-width 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+
+    .admin-content-area {
+        margin-left: 260px !important;
+        width: calc(100% - 260px) !important;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        transition: margin-left 0.25s cubic-bezier(0.16, 1, 0.3, 1), width 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+
+    /* ==========================================================================
+       MODO MINI-BARRA / SOLO ICONOS (COLLAPSED / ICON RAIL)
+       ========================================================================== */
+    .admin-app-layout.sidebar-collapsed .admin-sidebar {
+        width: 72px !important;
+        min-width: 72px !important;
+        max-width: 72px !important;
+        margin-left: 0 !important;
+    }
+
+    .admin-app-layout.sidebar-collapsed .admin-content-area {
+        margin-left: 72px !important;
+        width: calc(100% - 72px) !important;
+    }
+
+    /* Cabecera en modo solo iconos: centrar botón hamburguesa */
+    .admin-app-layout.sidebar-collapsed .sidebar-header {
+        justify-content: center !important;
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+
+    .admin-app-layout.sidebar-collapsed .sidebar-brand-wrapper {
+        display: none !important;
+    }
+
+    .admin-app-layout.sidebar-collapsed .sidebar-header-actions {
+        width: 100%;
+        justify-content: center !important;
+    }
+
+    /* Ocultar texto de las categorías y convertirlas en sutiles separadores */
+    .admin-app-layout.sidebar-collapsed .sidebar-section-title {
+        height: 1px;
+        font-size: 0;
+        padding: 0;
+        margin: 0.65rem 0.75rem;
+        background-color: rgba(255, 255, 255, 0.08);
+        border: none;
+        overflow: hidden;
+    }
+
+    /* Enlaces: centrar iconos y ocultar etiquetas de texto */
+    .admin-app-layout.sidebar-collapsed .sidebar-link {
+        justify-content: center !important;
+        padding: 0.68rem 0 !important;
+        margin-left: 4px;
+        margin-right: 4px;
+        text-align: center;
+    }
+
+    .admin-app-layout.sidebar-collapsed .sidebar-link i {
+        margin-right: 0 !important;
+        font-size: 1.25rem !important;
+    }
+
+    .admin-app-layout.sidebar-collapsed .sidebar-link span {
+        display: none !important;
+    }
+
+    /* Footer en modo mini: centrar iconos y avatar */
+    .admin-app-layout.sidebar-collapsed .sidebar-web-btn {
+        justify-content: center !important;
+        padding: 0.6rem 0 !important;
+        margin-left: 4px;
+        margin-right: 4px;
+    }
+
+    .admin-app-layout.sidebar-collapsed .sidebar-web-btn i.bi-globe {
+        margin-right: 0 !important;
+        font-size: 1.15rem;
+    }
+
+    .admin-app-layout.sidebar-collapsed .sidebar-web-btn span,
+    .admin-app-layout.sidebar-collapsed .sidebar-web-btn i.bi-arrow-up-right {
+        display: none !important;
+    }
+
+    .admin-app-layout.sidebar-collapsed .sidebar-user-card {
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0.6rem 0.2rem !important;
+        gap: 0.5rem;
+    }
+
+    .admin-app-layout.sidebar-collapsed .sidebar-user-info .min-w-0 {
+        display: none !important;
+    }
+
+    .admin-app-layout.sidebar-collapsed .admin-avatar-circle {
+        margin-right: 0 !important;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .admin-sidebar {
+        width: 290px !important;
+        max-width: 85vw !important;
+        background: rgba(11, 28, 20, 0.98) !important;
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        box-shadow: 10px 0 35px rgba(0, 0, 0, 0.55);
+        border-right: 1px solid rgba(194, 142, 58, 0.35) !important;
+    }
+
+    .admin-content-area {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+}
+
+.sidebar-header {
+    background: rgba(0, 0, 0, 0.18);
+    flex-shrink: 0;
+}
+
+.sidebar-logo {
+    height: 34px;
+    width: auto;
+}
+
+.admin-sidebar .sidebar-body,
+.offcanvas-lg.admin-sidebar .offcanvas-body,
+.sidebar-body {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 auto !important;
+    flex-grow: 1 !important;
+    min-height: 0 !important;
+    overflow-y: visible !important;
+    overflow-x: hidden !important;
+    padding: 1rem !important;
+}
+
+.admin-sidebar::-webkit-scrollbar,
+.sidebar-body::-webkit-scrollbar {
+    width: 4px;
+}
+
+.admin-sidebar::-webkit-scrollbar-track,
+.sidebar-body::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.admin-sidebar::-webkit-scrollbar-thumb,
+.sidebar-body::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+}
+
+.admin-sidebar::-webkit-scrollbar-thumb:hover,
+.sidebar-body::-webkit-scrollbar-thumb:hover {
+    background: rgba(194, 142, 58, 0.4);
+}
+
+.sidebar-nav {
+    width: 100%;
+    flex-shrink: 0;
+}
+
+.sidebar-footer {
+    width: 100%;
+    flex-shrink: 0;
+    margin-top: auto;
+}
+
+.sidebar-section-title {
+    font-family: var(--font-mono);
+    font-size: 0.69rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.42);
+    padding: 0.55rem 0.75rem 0.25rem 0.75rem;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    padding: 0.58rem 0.85rem;
+    color: rgba(255, 255, 255, 0.78) !important;
+    border-radius: var(--radius-sm);
+    font-size: 0.88rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    margin-bottom: 3px;
+    border-left: 3px solid transparent;
+}
+
+.sidebar-link:hover {
+    color: #FFFFFF !important;
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateX(3px);
+}
+
+.sidebar-link.active {
+    color: #FFFFFF !important;
+    background: linear-gradient(90deg, rgba(194, 142, 58, 0.28) 0%, rgba(45, 106, 79, 0.2) 100%) !important;
+    border-left-color: var(--brand-gold);
+    font-weight: 600;
+}
+
+.sidebar-web-btn {
+    display: flex;
+    align-items: center;
+    padding: 0.52rem 0.85rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius-sm);
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 0.84rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+}
+
+.sidebar-web-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--brand-gold);
+    color: #FFFFFF;
+}
+
+.sidebar-user-card {
+    background: rgba(0, 0, 0, 0.28);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.admin-avatar-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #C28E3A 0%, #A17126 100%);
+    color: #0B1C14;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.admin-topbar-controls {
+    min-height: 48px;
+    border-bottom: 1px solid var(--border-subtle);
+    background-color: #FFFFFF;
+}
+
+@media (min-width: 992px) {
+    .admin-topbar-controls {
+        position: sticky;
+        top: 0;
+        z-index: 1010;
+    }
+}
+
+.admin-content-area {
+    min-width: 0;
+    width: 100%;
+    min-height: 100vh;
+    background-color: var(--surface-base);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Métricas del Dashboard */
+.kpi-card {
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-subtle);
+    background: var(--surface-card);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-xs);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Formularios y Controles */
+.form-control, .form-select {
+    border-radius: var(--radius-sm);
+    border-color: var(--border-strong);
+    padding: 0.65rem 0.9rem;
+    font-size: 0.95rem;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--brand-sage);
+    box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.18);
+}
+
+/* Footer Institucional */
+.site-footer {
+    background-color: var(--surface-dark);
+    color: rgba(255, 255, 255, 0.7);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.site-footer a {
+    color: rgba(255, 255, 255, 0.75);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+.site-footer a:hover {
+    color: var(--brand-gold);
+}
+
+/* ==========================================================================
+   UTILIDADES & POLISH DE RESPONSIVIDAD MÓVIL
+   ========================================================================== */
+@media (max-width: 767.98px) {
+    .form-control, .form-select {
+        font-size: 16px !important; /* Previene auto-zoom en dispositivos móviles */
+    }
+
+    .table-responsive {
+        border-radius: var(--radius-sm);
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .card-encinas {
+        border-radius: var(--radius-sm);
+    }
+}
+
