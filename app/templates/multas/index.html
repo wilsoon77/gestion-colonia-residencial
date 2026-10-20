@@ -163,7 +163,14 @@
                             {% endif %}
                         </td>
                         {% endif %}
-                        <td class="fw-semibold text-dark">{{ m.motivo }}</td>
+                        <td class="fw-semibold text-dark">
+                            {{ m.motivo }}
+                            {% if m.evidencias and m.evidencias|length > 0 %}
+                            <span class="badge bg-light text-primary border border-primary-subtle ms-1" title="{{ m.evidencias|length }} evidencia(s) fotográfica(s) adjunta(s)">
+                                <i class="bi bi-paperclip me-1"></i>{{ m.evidencias|length }} foto{% if m.evidencias|length > 1 %}s{% endif %}
+                            </span>
+                            {% endif %}
+                        </td>
                         <td>
                             <span class="fw-bold fs-6 {% if m.estado == 'Pendiente' %}text-danger{% elif m.estado == 'Pagada' %}text-success{% else %}text-muted{% endif %}">
                                 Q{{ "%.2f"|format(m.monto) }}
@@ -224,7 +231,7 @@
 <div class="modal fade" id="modalCrearMulta" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form method="POST" action="{{ url_for('multas.crear') }}">
+            <form method="POST" action="{{ url_for('multas.crear') }}" enctype="multipart/form-data">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="modal-header">
                     <h5 class="modal-title fw-bold"><i class="bi bi-shield-exclamation text-danger me-2"></i>Aplicar Nueva Multa</h5>
@@ -233,10 +240,16 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Residente Infractor <span class="text-danger">*</span></label>
-                        <select class="form-select" name="id_vecino" required>
-                            <option value="">-- Seleccionar Residente --</option>
+                        <select class="form-select searchable-resident-select" name="id_vecino" required>
+                            <option value="">-- Buscar y seleccionar residente --</option>
                             {% for v in vecinos %}
-                            <option value="{{ v.id_vecino }}">
+                            <option value="{{ v.id_vecino }}"
+                                    data-nombre="{{ v.nombre_completo }}"
+                                    data-casa="{% if v.casa %}Casa #{{ v.casa.numero_casa }}{% if v.casa.calle_avenida %} - {{ v.casa.calle_avenida }}{% endif %}{% endif %}"
+                                    data-dpi="{{ v.dpi or '' }}"
+                                    data-telefono="{{ v.telefono or '' }}"
+                                    data-correo="{{ v.correo or '' }}"
+                                    data-familia="{% if v.familia %}{{ v.familia.nombre }}{% endif %}">
                                 {{ v.nombre_completo }} {% if v.casa %}(Casa #{{ v.casa.numero_casa }}){% endif %}
                             </option>
                             {% endfor %}
@@ -267,6 +280,13 @@
                             <option value="Exonerada">Exonerada</option>
                         </select>
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-camera me-1 text-primary"></i>Evidencias Fotográficas
+                            <span class="badge bg-light text-muted border ms-1 fw-normal">Opcional</span>
+                        </label>
+                        <div data-multi-image-uploader="true" data-input-name="evidencias"></div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -276,5 +296,6 @@
         </div>
     </div>
 </div>
+
 {% endif %}
 {% endblock %}

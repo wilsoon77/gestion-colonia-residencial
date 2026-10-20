@@ -16,6 +16,14 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_DATABASE_URI = raw_db_url
 
+    # Cloudinary Storage Configuration
+    CLOUDINARY_CLOUD_NAME = os.getenv('CLOUDINARY_CLOUD_NAME') or os.getenv('cloudinary.cloud-name')
+    CLOUDINARY_API_KEY = os.getenv('CLOUDINARY_API_KEY') or os.getenv('cloudinary.api-key')
+    CLOUDINARY_API_SECRET = os.getenv('CLOUDINARY_API_SECRET') or os.getenv('cloudinary.api-secret')
+
+    # Uploads limit (16MB)
+    MAX_CONTENT_LENGTH = 16 * 1024 * 1024
+
 
 class DevelopmentConfig(Config):
     DEBUG = True

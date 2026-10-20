@@ -148,6 +148,166 @@
     </div>
 </div>
 
+<!-- ==========================================================================
+     SECCIÓN DE COMPROBANTES DE PAGO / VOUCHERS BANCARIOS
+     ========================================================================== -->
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-2">
+            <h5 class="mb-0 fw-semibold text-secondary">
+                <i class="bi bi-receipt-cutoff text-primary me-2"></i>Comprobantes de Pago y Depósito Bancario
+            </h5>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                {{ deuda.comprobantes|length }} archivo(s)
+            </span>
+        </div>
+        {% if current_user.rol and (current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] or (current_user.vecino and current_user.vecino.id_vecino == deuda.id_vecino)) %}
+        <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalSubirComprobantes">
+            <i class="bi bi-cloud-arrow-up-fill me-1"></i>Adjuntar Comprobante
+        </button>
+        {% endif %}
+    </div>
+    <div class="card-body">
+        {% if not deuda.comprobantes %}
+            <div class="text-center py-4 text-muted">
+                <i class="bi bi-receipt display-4 text-secondary opacity-50 mb-2 d-block"></i>
+                <h6 class="fw-semibold">No hay comprobantes de pago registrados para esta deuda</h6>
+                <p class="small text-muted mb-3">
+                    Puedes adjuntar recibos de transferencia, boletas de depósito o cheques como respaldo contable.
+                </p>
+                {% if current_user.rol and (current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] or (current_user.vecino and current_user.vecino.id_vecino == deuda.id_vecino)) %}
+                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalSubirComprobantes">
+                    <i class="bi bi-plus-circle me-1"></i>Adjuntar Comprobante Ahora
+                </button>
+                {% endif %}
+            </div>
+        {% else %}
+            <div class="row g-3">
+                {% for comp in deuda.comprobantes %}
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="card h-100 border shadow-sm overflow-hidden position-relative group-evidence-card">
+                        <!-- Imagen con enlace modal -->
+                        <div class="position-relative overflow-hidden cursor-pointer bg-light d-flex align-items-center justify-content-center"
+                             style="height: 160px; cursor: pointer;"
+                             data-bs-toggle="modal"
+                             data-bs-target="#modalVerFoto_{{ comp.id_comprobante }}">
+                            <img src="{{ comp.url }}" alt="{{ comp.nombre_archivo or 'Comprobante' }}" class="w-100 h-100 object-fit-cover transition-transform">
+                            <div class="position-absolute top-0 end-0 m-2">
+                                <span class="badge bg-dark bg-opacity-75 text-white" title="Ampliar imagen">
+                                    <i class="bi bi-arrows-fullscreen"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-body p-2 d-flex flex-column justify-content-between">
+                            <div class="mb-1">
+                                <span class="d-block small fw-semibold text-truncate text-dark" title="{{ comp.nombre_archivo or 'comprobante.jpg' }}">
+                                    {{ comp.nombre_archivo or 'comprobante.jpg' }}
+                                </span>
+                                <small class="text-muted font-monospace" style="font-size: 11px;">
+                                    <i class="bi bi-clock me-1"></i>{{ comp.fecha_subida.strftime('%d/%m/%Y %H:%M') }}
+                                </small>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center pt-2 border-top mt-1">
+                                <a href="{{ comp.url }}" target="_blank" class="btn btn-sm btn-link text-decoration-none p-0 text-primary" style="font-size: 12px;">
+                                    <i class="bi bi-box-arrow-up-right me-1"></i>Abrir
+                                </a>
+                                {% if current_user.rol and current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] %}
+                                <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2" style="font-size: 11px;" data-bs-toggle="modal" data-bs-target="#modalEliminarComprobante_{{ comp.id_comprobante }}">
+                                    <i class="bi bi-trash3 me-1"></i>Eliminar
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal Lightbox para Ver Imagen Completa -->
+                    <div class="modal fade" id="modalVerFoto_{{ comp.id_comprobante }}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                            <div class="modal-content border-0 shadow">
+                                <div class="modal-header bg-dark text-white py-2">
+                                    <h6 class="modal-title small fw-semibold text-truncate">
+                                        <i class="bi bi-image me-2"></i>{{ comp.nombre_archivo or 'Comprobante' }}
+                                    </h6>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body p-0 bg-black text-center">
+                                    <img src="{{ comp.url }}" alt="Comprobante ampliado" class="img-fluid" style="max-height: 80vh; object-fit: contain;">
+                                </div>
+                                <div class="modal-footer py-2 d-flex justify-content-between">
+                                    <span class="small text-muted">Subido: {{ comp.fecha_subida.strftime('%d/%m/%Y %H:%M') }}</span>
+                                    <a href="{{ comp.url }}" target="_blank" download class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-download me-1"></i>Descargar Original
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if current_user.rol and current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] %}
+                    <!-- Modal Eliminar Comprobante Individual -->
+                    <div class="modal fade" id="modalEliminarComprobante_{{ comp.id_comprobante }}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form method="POST" action="{{ url_for('deudas.eliminar_comprobante', id_deuda=deuda.id_deuda, id_comprobante=comp.id_comprobante) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <div class="modal-header bg-danger text-white">
+                                        <h5 class="modal-title fw-bold"><i class="bi bi-trash3-fill me-2"></i>Eliminar Comprobante</h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>¿Estás seguro de que deseas eliminar este comprobante de pago?</p>
+                                        <div class="d-flex align-items-center gap-3 p-2 bg-light rounded border">
+                                            <img src="{{ comp.url }}" alt="Thumbnail" class="rounded object-fit-cover" style="width: 60px; height: 60px;">
+                                            <div class="min-w-0">
+                                                <div class="fw-semibold text-truncate small">{{ comp.nombre_archivo or 'comprobante.jpg' }}</div>
+                                                <small class="text-muted">{{ comp.fecha_subida.strftime('%d/%m/%Y %H:%M') }}</small>
+                                            </div>
+                                        </div>
+                                        <small class="text-muted d-block mt-2">Esta acción borrará la imagen de forma permanente del almacenamiento en la nube.</small>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-danger"><i class="bi bi-trash3-fill me-1"></i>Eliminar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if current_user.rol and (current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] or (current_user.vecino and current_user.vecino.id_vecino == deuda.id_vecino)) %}
+<!-- Modal Adjuntar Más Comprobantes -->
+<div class="modal fade" id="modalSubirComprobantes" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('deudas.subir_comprobantes', id_deuda=deuda.id_deuda) }}" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-cloud-arrow-up-fill text-primary me-2"></i>Adjuntar Comprobantes de Pago</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Seleccionar Archivo(s) o Foto(s) de Boleta <span class="text-danger">*</span></label>
+                        <div data-multi-image-uploader="true" data-input-name="comprobantes"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-upload me-1"></i>Subir Comprobante(s)</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 {% if current_user.rol and current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] %}
 <!-- Modal Editar Deuda -->
 <div class="modal fade" id="modalEditarDeuda" tabindex="-1" aria-hidden="true">
@@ -162,9 +322,16 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Residente <span class="text-danger">*</span></label>
-                        <select class="form-select" name="id_vecino" required>
+                        <select class="form-select searchable-resident-select" name="id_vecino" required>
                             {% for v in vecinos %}
-                            <option value="{{ v.id_vecino }}" {% if v.id_vecino == deuda.id_vecino %}selected{% endif %}>
+                            <option value="{{ v.id_vecino }}"
+                                    data-nombre="{{ v.nombre_completo }}"
+                                    data-casa="{% if v.casa %}Casa #{{ v.casa.numero_casa }}{% if v.casa.calle_avenida %} - {{ v.casa.calle_avenida }}{% endif %}{% endif %}"
+                                    data-dpi="{{ v.dpi or '' }}"
+                                    data-telefono="{{ v.telefono or '' }}"
+                                    data-correo="{{ v.correo or '' }}"
+                                    data-familia="{% if v.familia %}{{ v.familia.nombre }}{% endif %}"
+                                    {% if v.id_vecino == deuda.id_vecino %}selected{% endif %}>
                                 {{ v.nombre_completo }} {% if v.casa %}(Casa #{{ v.casa.numero_casa }}){% endif %}
                             </option>
                             {% endfor %}

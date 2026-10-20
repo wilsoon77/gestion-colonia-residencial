@@ -116,7 +116,23 @@
                     {% for c in casas %}
                     <tr>
                         <td class="ps-4">
-                            <span class="fw-bold text-primary fs-6">Casa #{{ c.numero_casa }}</span>
+                            <div class="d-flex align-items-center gap-2">
+                                {% if c.fotos|length > 0 %}
+                                <img src="{{ c.fotos[0].url }}" alt="Fachada" class="rounded object-fit-cover shadow-sm" style="width: 38px; height: 38px;">
+                                {% else %}
+                                <div class="rounded bg-light text-muted d-flex align-items-center justify-content-center border" style="width: 38px; height: 38px;">
+                                    <i class="bi bi-house text-secondary"></i>
+                                </div>
+                                {% endif %}
+                                <div>
+                                    <span class="fw-bold text-primary fs-6 d-block">Casa #{{ c.numero_casa }}</span>
+                                    {% if c.fotos|length > 0 %}
+                                        <small class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 10px;">
+                                            <i class="bi bi-camera me-1"></i>{{ c.fotos|length }} foto(s)
+                                        </small>
+                                    {% endif %}
+                                </div>
+                            </div>
                         </td>
                         <td>
                             {% if c.manzana %}
@@ -164,7 +180,7 @@
 <div class="modal fade" id="modalCrearCasa" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form method="POST" action="{{ url_for('casas.crear') }}">
+            <form method="POST" action="{{ url_for('casas.crear') }}" enctype="multipart/form-data">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="modal-header">
                     <h5 class="modal-title fw-bold"><i class="bi bi-house-add-fill text-primary me-2"></i>Registrar Nueva Casa</h5>
@@ -191,6 +207,13 @@
                             <option value="En Construcción">En Construcción</option>
                             <option value="Mantenimiento">Mantenimiento</option>
                         </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-camera me-1 text-primary"></i>Fotografías del Inmueble y Fachada
+                            <span class="badge bg-light text-muted border ms-1 fw-normal">Opcional</span>
+                        </label>
+                        <div data-multi-image-uploader="true" data-input-name="fotos"></div>
                     </div>
                 </div>
                 <div class="modal-footer">

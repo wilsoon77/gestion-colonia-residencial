@@ -163,7 +163,14 @@
                             {% endif %}
                         </td>
                         {% endif %}
-                        <td class="fw-semibold text-dark">{{ d.concepto }}</td>
+                        <td class="fw-semibold text-dark">
+                            {{ d.concepto }}
+                            {% if d.comprobantes|length > 0 %}
+                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle ms-1" style="font-size: 10.5px;" title="{{ d.comprobantes|length }} comprobante(s) de pago adjunto(s)">
+                                    <i class="bi bi-receipt me-1"></i>{{ d.comprobantes|length }}
+                                </span>
+                            {% endif %}
+                        </td>
                         <td>
                             <span class="fw-bold fs-6 {% if d.estado == 'Pendiente' %}text-danger{% elif d.estado == 'Pagada' %}text-success{% else %}text-muted{% endif %}">
                                 Q{{ "%.2f"|format(d.monto) }}
@@ -224,7 +231,7 @@
 <div class="modal fade" id="modalCrearDeuda" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form method="POST" action="{{ url_for('deudas.crear') }}">
+            <form method="POST" action="{{ url_for('deudas.crear') }}" enctype="multipart/form-data">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="modal-header">
                     <h5 class="modal-title fw-bold"><i class="bi bi-cash-coin text-warning me-2"></i>Registrar Nueva Deuda</h5>
@@ -233,10 +240,16 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Residente Deudor <span class="text-danger">*</span></label>
-                        <select class="form-select" name="id_vecino" required>
-                            <option value="">-- Seleccionar Residente --</option>
+                        <select class="form-select searchable-resident-select" name="id_vecino" required>
+                            <option value="">-- Buscar y seleccionar residente --</option>
                             {% for v in vecinos %}
-                            <option value="{{ v.id_vecino }}">
+                            <option value="{{ v.id_vecino }}"
+                                    data-nombre="{{ v.nombre_completo }}"
+                                    data-casa="{% if v.casa %}Casa #{{ v.casa.numero_casa }}{% if v.casa.calle_avenida %} - {{ v.casa.calle_avenida }}{% endif %}{% endif %}"
+                                    data-dpi="{{ v.dpi or '' }}"
+                                    data-telefono="{{ v.telefono or '' }}"
+                                    data-correo="{{ v.correo or '' }}"
+                                    data-familia="{% if v.familia %}{{ v.familia.nombre }}{% endif %}">
                                 {{ v.nombre_completo }} {% if v.casa %}(Casa #{{ v.casa.numero_casa }}){% endif %}
                             </option>
                             {% endfor %}
@@ -266,6 +279,13 @@
                             <option value="Pagada">Pagada</option>
                             <option value="Anulada">Anulada</option>
                         </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-receipt me-1 text-primary"></i>Comprobantes de Pago / Vouchers Bancarios
+                            <span class="badge bg-light text-muted border ms-1 fw-normal">Opcional</span>
+                        </label>
+                        <div data-multi-image-uploader="true" data-input-name="comprobantes"></div>
                     </div>
                 </div>
                 <div class="modal-footer">

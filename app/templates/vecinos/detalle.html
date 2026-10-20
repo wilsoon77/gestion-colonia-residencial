@@ -216,6 +216,11 @@
                             <tr class="table-clickable-row" onclick="window.location='{{ url_for('deudas.detalle', id_deuda=d.id_deuda) }}'" title="Clic para ver detalle de la deuda #{{ d.id_deuda }}">
                                 <td class="ps-3 fw-semibold text-dark">
                                     <i class="bi bi-receipt text-warning me-1"></i>{{ d.concepto }}
+                                    {% if d.comprobantes|length > 0 %}
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle ms-1" style="font-size: 10px;" title="{{ d.comprobantes|length }} comprobante(s) de pago adjunto(s)">
+                                            <i class="bi bi-receipt me-1"></i>{{ d.comprobantes|length }}
+                                        </span>
+                                    {% endif %}
                                 </td>
                                 <td class="fw-bold text-dark">Q{{ "%.2f"|format(d.monto) }}</td>
                                 <td class="text-muted">{{ d.fecha.strftime('%d/%m/%Y') }}</td>
@@ -266,6 +271,11 @@
                             <tr class="table-clickable-row" onclick="window.location='{{ url_for('multas.detalle', id_multa=m.id_multa) }}'" title="Clic para ver detalle de la multa #{{ m.id_multa }}">
                                 <td class="ps-3 fw-semibold text-dark">
                                     <i class="bi bi-shield-exclamation text-danger me-1"></i>{{ m.motivo }}
+                                    {% if m.evidencias and m.evidencias|length > 0 %}
+                                    <span class="badge bg-light text-primary border border-primary-subtle ms-1" title="{{ m.evidencias|length }} foto(s) de evidencia">
+                                        <i class="bi bi-camera me-1"></i>{{ m.evidencias|length }}
+                                    </span>
+                                    {% endif %}
                                 </td>
                                 <td class="fw-bold text-dark">Q{{ "%.2f"|format(m.monto) }}</td>
                                 <td class="text-muted">{{ m.fecha.strftime('%d/%m/%Y') }}</td>
@@ -321,10 +331,16 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Familiar Relacionado <span class="text-danger">*</span></label>
-                        <select class="form-select" name="id_relacionado" required>
-                            <option value="">-- Seleccionar Residente --</option>
+                        <select class="form-select searchable-resident-select" name="id_relacionado" required>
+                            <option value="">-- Buscar y seleccionar residente --</option>
                             {% for ov in otros_vecinos %}
-                            <option value="{{ ov.id_vecino }}">
+                            <option value="{{ ov.id_vecino }}"
+                                    data-nombre="{{ ov.nombre_completo }}"
+                                    data-casa="{% if ov.casa %}Casa #{{ ov.casa.numero_casa }}{% if ov.casa.calle_avenida %} - {{ ov.casa.calle_avenida }}{% endif %}{% endif %}"
+                                    data-dpi="{{ ov.dpi or '' }}"
+                                    data-telefono="{{ ov.telefono or '' }}"
+                                    data-correo="{{ ov.correo or '' }}"
+                                    data-familia="{% if ov.familia %}{{ ov.familia.nombre }}{% endif %}">
                                 {{ ov.nombre_completo }} {% if ov.casa %}(Casa #{{ ov.casa.numero_casa }}){% endif %} {% if ov.familia %}[{{ ov.familia.nombre }}]{% endif %}
                             </option>
                             {% endfor %}

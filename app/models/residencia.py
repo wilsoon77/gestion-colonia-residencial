@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from app import db
 
 
@@ -11,6 +12,13 @@ class Casa(db.Model):
     estado = db.Column(db.String(30), default='Ocupada', nullable=False)  # Ocupada, Desocupada, En Construcción
 
     vecinos = db.relationship('Vecino', backref='casa', lazy=True)
+    fotos = db.relationship(
+        'FotoCasa',
+        back_populates='casa',
+        cascade='all, delete-orphan',
+        order_by='FotoCasa.id_foto.desc()',
+        lazy=True
+    )
 
     def __repr__(self):
         return f'<Casa {self.numero_casa} - Mz {self.manzana}>'
@@ -99,6 +107,23 @@ class VecinoParentesco(db.Model):
 
     def __repr__(self):
         return f'<VecinoParentesco {self.id_vecino} es {self.id_parentesco} de {self.id_relacionado}>'
+
+
+class FotoCasa(db.Model):
+    __tablename__ = 'foto_casa'
+
+    id_foto = db.Column(db.Integer, primary_key=True)
+    id_casa = db.Column(db.Integer, db.ForeignKey('casa.id_casa', ondelete='CASCADE'), nullable=False)
+    url = db.Column(db.String(500), nullable=False)
+    public_id = db.Column(db.String(255), nullable=True)
+    nombre_archivo = db.Column(db.String(255), nullable=True)
+    descripcion = db.Column(db.String(200), nullable=True)
+    fecha_subida = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+
+    casa = db.relationship('Casa', back_populates='fotos')
+
+    def __repr__(self):
+        return f'<FotoCasa #{self.id_foto} (Casa #{self.id_casa})>'
 
 
 # Alias para compatibilidad de importaciones

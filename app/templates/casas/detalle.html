@@ -128,6 +128,177 @@
     </div>
 </div>
 
+<!-- ==========================================================================
+     SECCIÓN DE FOTOGRAFÍAS DEL INMUEBLE Y FACHADA
+     ========================================================================== -->
+<div class="card shadow-sm border-0 mb-4 mt-4">
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-2">
+            <h5 class="mb-0 fw-semibold text-secondary">
+                <i class="bi bi-camera-fill text-primary me-2"></i>Fotografías del Inmueble y Fachadas
+            </h5>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                {{ casa.fotos|length }} foto(s)
+            </span>
+        </div>
+        {% if current_user.rol and current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] %}
+        <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalSubirFotos">
+            <i class="bi bi-cloud-arrow-up-fill me-1"></i>Adjuntar Fotos
+        </button>
+        {% endif %}
+    </div>
+    <div class="card-body">
+        {% if not casa.fotos %}
+            <div class="text-center py-4 text-muted">
+                <i class="bi bi-house-door display-4 text-secondary opacity-50 mb-2 d-block"></i>
+                <h6 class="fw-semibold">No hay fotografías registradas para esta vivienda</h6>
+                <p class="small text-muted mb-3">
+                    Puedes adjuntar fotografías de la fachada frontal, patio o planos para control visual y de seguridad.
+                </p>
+                {% if current_user.rol and current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] %}
+                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalSubirFotos">
+                    <i class="bi bi-plus-circle me-1"></i>Subir Primeras Fotos
+                </button>
+                {% endif %}
+            </div>
+        {% else %}
+            <div class="row g-3">
+                {% for f in casa.fotos %}
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="card h-100 border shadow-sm overflow-hidden position-relative group-evidence-card">
+                        <!-- Imagen con enlace modal -->
+                        <div class="position-relative overflow-hidden cursor-pointer bg-light d-flex align-items-center justify-content-center"
+                             style="height: 160px; cursor: pointer;"
+                             data-bs-toggle="modal"
+                             data-bs-target="#modalVerFotoCasa_{{ f.id_foto }}">
+                            <img src="{{ f.url }}" alt="{{ f.descripcion or 'Foto Casa' }}" class="w-100 h-100 object-fit-cover transition-transform">
+                            <div class="position-absolute top-0 end-0 m-2">
+                                <span class="badge bg-dark bg-opacity-75 text-white" title="Ampliar foto">
+                                    <i class="bi bi-arrows-fullscreen"></i>
+                                </span>
+                            </div>
+                            {% if f.descripcion %}
+                            <div class="position-absolute bottom-0 start-0 m-2">
+                                <span class="badge bg-primary bg-opacity-75 text-white" style="font-size: 10px;">
+                                    {{ f.descripcion }}
+                                </span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="card-body p-2 d-flex flex-column justify-content-between">
+                            <div class="mb-1">
+                                <span class="d-block small fw-semibold text-truncate text-dark" title="{{ f.nombre_archivo or 'foto.jpg' }}">
+                                    {{ f.nombre_archivo or 'foto.jpg' }}
+                                </span>
+                                <small class="text-muted font-monospace" style="font-size: 11px;">
+                                    <i class="bi bi-clock me-1"></i>{{ f.fecha_subida.strftime('%d/%m/%Y %H:%M') }}
+                                </small>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center pt-2 border-top mt-1">
+                                <a href="{{ f.url }}" target="_blank" class="btn btn-sm btn-link text-decoration-none p-0 text-primary" style="font-size: 12px;">
+                                    <i class="bi bi-box-arrow-up-right me-1"></i>Abrir
+                                </a>
+                                {% if current_user.rol and current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] %}
+                                <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2" style="font-size: 11px;" data-bs-toggle="modal" data-bs-target="#modalEliminarFotoCasa_{{ f.id_foto }}">
+                                    <i class="bi bi-trash3 me-1"></i>Eliminar
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal Lightbox para Ver Foto Completa -->
+                    <div class="modal fade" id="modalVerFotoCasa_{{ f.id_foto }}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                            <div class="modal-content border-0 shadow">
+                                <div class="modal-header bg-dark text-white py-2">
+                                    <h6 class="modal-title small fw-semibold text-truncate">
+                                        <i class="bi bi-image me-2"></i>{{ f.descripcion or f.nombre_archivo or 'Fotografía Casa' }}
+                                    </h6>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body p-0 bg-black text-center">
+                                    <img src="{{ f.url }}" alt="Fotografía ampliada" class="img-fluid" style="max-height: 80vh; object-fit: contain;">
+                                </div>
+                                <div class="modal-footer py-2 d-flex justify-content-between">
+                                    <span class="small text-muted">Subido: {{ f.fecha_subida.strftime('%d/%m/%Y %H:%M') }}</span>
+                                    <a href="{{ f.url }}" target="_blank" download class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-download me-1"></i>Descargar Original
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if current_user.rol and current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] %}
+                    <!-- Modal Eliminar Foto Individual -->
+                    <div class="modal fade" id="modalEliminarFotoCasa_{{ f.id_foto }}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form method="POST" action="{{ url_for('casas.eliminar_foto', id_casa=casa.id_casa, id_foto=f.id_foto) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <div class="modal-header bg-danger text-white">
+                                        <h5 class="modal-title fw-bold"><i class="bi bi-trash3-fill me-2"></i>Eliminar Fotografía</h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>¿Estás seguro de que deseas eliminar esta fotografía del inmueble?</p>
+                                        <div class="d-flex align-items-center gap-3 p-2 bg-light rounded border">
+                                            <img src="{{ f.url }}" alt="Thumbnail" class="rounded object-fit-cover" style="width: 60px; height: 60px;">
+                                            <div class="min-w-0">
+                                                <div class="fw-semibold text-truncate small">{{ f.nombre_archivo or 'foto.jpg' }}</div>
+                                                <small class="text-muted">{{ f.fecha_subida.strftime('%d/%m/%Y %H:%M') }}</small>
+                                            </div>
+                                        </div>
+                                        <small class="text-muted d-block mt-2">Esta acción borrará la imagen de forma permanente del almacenamiento en la nube.</small>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-danger"><i class="bi bi-trash3-fill me-1"></i>Eliminar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if current_user.rol and current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] %}
+<!-- Modal Adjuntar Fotos a Casa -->
+<div class="modal fade" id="modalSubirFotos" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('casas.subir_fotos', id_casa=casa.id_casa) }}" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-cloud-arrow-up-fill text-primary me-2"></i>Adjuntar Fotos de la Vivienda</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Descripción o Etiqueta</label>
+                        <input type="text" class="form-control" name="descripcion" placeholder="Ej. Fachada frontal, Jardín, etc.">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Seleccionar Fotografía(s) <span class="text-danger">*</span></label>
+                        <div data-multi-image-uploader="true" data-input-name="fotos"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-upload me-1"></i>Subir Fotografías</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 {% if current_user.rol and current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] %}
 <!-- Modal Editar Casa -->
 <div class="modal fade" id="modalEditarCasa" tabindex="-1" aria-hidden="true">

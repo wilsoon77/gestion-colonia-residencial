@@ -10,6 +10,9 @@ email-validator==2.2.0
 Werkzeug==3.0.3
 gunicorn==22.0.0
 
+# Storage
+cloudinary==1.46.3
+
 # Testing & QA
 pytest==8.2.2
 pytest-flask==1.3.0

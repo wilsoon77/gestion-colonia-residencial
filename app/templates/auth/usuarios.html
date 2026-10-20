@@ -114,10 +114,17 @@
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label fw-semibold">Vecino Asociado (Opcional)</label>
-                                            <select class="form-select" name="id_vecino">
+                                            <select class="form-select searchable-resident-select" name="id_vecino">
                                                 <option value="">-- Ninguno (Usuario del Sistema) --</option>
                                                 {% for v in vecinos %}
-                                                <option value="{{ v.id_vecino }}" {% if u.id_vecino == v.id_vecino %}selected{% endif %}>
+                                                <option value="{{ v.id_vecino }}"
+                                                        data-nombre="{{ v.nombre_completo }}"
+                                                        data-casa="{% if v.casa %}Casa #{{ v.casa.numero_casa }}{% if v.casa.calle_avenida %} - {{ v.casa.calle_avenida }}{% endif %}{% endif %}"
+                                                        data-dpi="{{ v.dpi or '' }}"
+                                                        data-telefono="{{ v.telefono or '' }}"
+                                                        data-correo="{{ v.correo or '' }}"
+                                                        data-familia="{% if v.familia %}{{ v.familia.nombre }}{% endif %}"
+                                                        {% if u.id_vecino == v.id_vecino %}selected{% endif %}>
                                                     {{ v.nombre_completo }} {% if v.casa %}(Casa {{ v.casa.numero_casa }}){% endif %}
                                                 </option>
                                                 {% endfor %}
@@ -204,10 +211,16 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Vecino Asociado (Opcional)</label>
-                        <select class="form-select" name="id_vecino">
+                        <select class="form-select searchable-resident-select" name="id_vecino">
                             <option value="">-- Ninguno (Usuario del Sistema) --</option>
                             {% for v in vecinos %}
-                            <option value="{{ v.id_vecino }}">
+                            <option value="{{ v.id_vecino }}"
+                                    data-nombre="{{ v.nombre_completo }}"
+                                    data-casa="{% if v.casa %}Casa #{{ v.casa.numero_casa }}{% if v.casa.calle_avenida %} - {{ v.casa.calle_avenida }}{% endif %}{% endif %}"
+                                    data-dpi="{{ v.dpi or '' }}"
+                                    data-telefono="{{ v.telefono or '' }}"
+                                    data-correo="{{ v.correo or '' }}"
+                                    data-familia="{% if v.familia %}{{ v.familia.nombre }}{% endif %}">
                                 {{ v.nombre_completo }} {% if v.casa %}(Casa {{ v.casa.numero_casa }}){% endif %}
                             </option>
                             {% endfor %}

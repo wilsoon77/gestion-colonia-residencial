@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort
 from flask_login import login_required, current_user
 from app import db
-from app.models.residencia import Casa
+from app.models.residencia import Casa, FotoCasa
+from app.services.cloudinary_service import allowed_image_file, subir_imagen, eliminar_imagen
 from app.utils.decorators import role_required
 
 casas_bp = Blueprint('casas', __name__)
@@ -76,7 +77,37 @@ def crear():
     db.session.add(nueva_casa)
     db.session.commit()
 
-    flash(f'Casa #{numero_casa} registrada exitosamente.', 'success')
+    # Procesar fotografías de la casa/fachada si se adjuntaron
+    archivos = request.files.getlist('fotos')
+    fotos_subidas = 0
+    errores_archivos = 0
+
+    for archivo in archivos:
+        if archivo and archivo.filename:
+            if not allowed_image_file(archivo.filename):
+                errores_archivos += 1
+                continue
+            resultado_upload = subir_imagen(archivo, folder='residencial/casas')
+            if resultado_upload:
+                foto = FotoCasa(
+                    id_casa=nueva_casa.id_casa,
+                    url=resultado_upload['url'],
+                    public_id=resultado_upload['public_id'],
+                    nombre_archivo=resultado_upload['nombre_archivo'],
+                    descripcion='Fachada' if fotos_subidas == 0 else None
+                )
+                db.session.add(foto)
+                fotos_subidas += 1
+            else:
+                errores_archivos += 1
+
+    if fotos_subidas > 0:
+        db.session.commit()
+
+    msg_fotos = f" con {fotos_subidas} fotografía(s)" if fotos_subidas > 0 else ""
+    flash(f'Casa #{numero_casa} registrada exitosamente{msg_fotos}.', 'success')
+    if errores_archivos > 0:
+        flash(f'{errores_archivos} archivo(s) no pudieron subirse (formato no permitido o error de carga).', 'warning')
     return redirect(url_for('casas.index'))
 
 
@@ -119,11 +150,80 @@ def editar(id_casa):
     return redirect(url_for('casas.detalle', id_casa=id_casa))
 
 
+@casas_bp.route('/<int:id_casa>/fotos/subir', methods=['POST'])
+@login_required
+@role_required('Administrador', 'Administrador de Colonia')
+def subir_fotos(id_casa):
+    casa = db.get_or_404(Casa, id_casa)
+    archivos = request.files.getlist('fotos')
+    descripcion = request.form.get('descripcion', '').strip()
+
+    if not archivos or all(not a.filename for a in archivos):
+        flash('Por favor selecciona al menos una fotografía para adjuntar.', 'warning')
+        return redirect(url_for('casas.detalle', id_casa=id_casa))
+
+    fotos_subidas = 0
+    errores_archivos = 0
+
+    for archivo in archivos:
+        if archivo and archivo.filename:
+            if not allowed_image_file(archivo.filename):
+                errores_archivos += 1
+                continue
+            resultado_upload = subir_imagen(archivo, folder='residencial/casas')
+            if resultado_upload:
+                foto = FotoCasa(
+                    id_casa=casa.id_casa,
+                    url=resultado_upload['url'],
+                    public_id=resultado_upload['public_id'],
+                    nombre_archivo=resultado_upload['nombre_archivo'],
+                    descripcion=descripcion if descripcion else None
+                )
+                db.session.add(foto)
+                fotos_subidas += 1
+            else:
+                errores_archivos += 1
+
+    if fotos_subidas > 0:
+        db.session.commit()
+        flash(f'Se adjuntaron exitosamente {fotos_subidas} fotografía(s) a la casa.', 'success')
+
+    if errores_archivos > 0:
+        flash(f'{errores_archivos} imagen(es) no pudieron procesarse o tienen un formato no soportado.', 'warning')
+
+    return redirect(url_for('casas.detalle', id_casa=id_casa))
+
+
+@casas_bp.route('/<int:id_casa>/fotos/<int:id_foto>/eliminar', methods=['POST'])
+@login_required
+@role_required('Administrador', 'Administrador de Colonia')
+def eliminar_foto(id_casa, id_foto):
+    casa = db.get_or_404(Casa, id_casa)
+    foto = db.get_or_404(FotoCasa, id_foto)
+
+    if foto.id_casa != casa.id_casa:
+        abort(400)
+
+    if foto.public_id:
+        eliminar_imagen(foto.public_id)
+
+    db.session.delete(foto)
+    db.session.commit()
+
+    flash('Fotografía del inmueble eliminada exitosamente.', 'info')
+    return redirect(url_for('casas.detalle', id_casa=id_casa))
+
+
 @casas_bp.route('/<int:id_casa>/eliminar', methods=['POST'])
 @login_required
 @role_required('Administrador', 'Administrador de Colonia')
 def eliminar(id_casa):
     casa = db.get_or_404(Casa, id_casa)
+
+    # Limpiar fotografías de Cloudinary asociadas a esta casa
+    for f in casa.fotos:
+        if f.public_id:
+            eliminar_imagen(f.public_id)
 
     # Desasociar vecinos que viven en la casa antes de borrarla
     for vecino in casa.vecinos:

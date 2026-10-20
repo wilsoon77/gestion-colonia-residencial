@@ -3,8 +3,9 @@ from decimal import Decimal
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort
 from flask_login import login_required, current_user
 from app import db
-from app.models.finanzas import Deuda
+from app.models.finanzas import Deuda, ComprobanteDeuda
 from app.models.residencia import Vecino
+from app.services.cloudinary_service import allowed_image_file, subir_imagen, eliminar_imagen
 from app.utils.decorators import role_required
 
 deudas_bp = Blueprint('deudas', __name__)
@@ -123,8 +124,37 @@ def crear():
     db.session.add(nueva_deuda)
     db.session.commit()
 
+    # Procesar comprobantes de pago bancarios si se adjuntaron
+    archivos = request.files.getlist('comprobantes')
+    comprobantes_subidos = 0
+    errores_archivos = 0
+
+    for archivo in archivos:
+        if archivo and archivo.filename:
+            if not allowed_image_file(archivo.filename):
+                errores_archivos += 1
+                continue
+            resultado_upload = subir_imagen(archivo, folder='residencial/deudas_comprobantes')
+            if resultado_upload:
+                comprobante = ComprobanteDeuda(
+                    id_deuda=nueva_deuda.id_deuda,
+                    url=resultado_upload['url'],
+                    public_id=resultado_upload['public_id'],
+                    nombre_archivo=resultado_upload['nombre_archivo']
+                )
+                db.session.add(comprobante)
+                comprobantes_subidos += 1
+            else:
+                errores_archivos += 1
+
+    if comprobantes_subidos > 0:
+        db.session.commit()
+
     vecino = db.session.get(Vecino, int(id_vecino))
-    flash(f'Deuda de Q{monto:.2f} registrada exitosamente a {vecino.nombre_completo}.', 'success')
+    msg_comp = f" con {comprobantes_subidos} comprobante(s) adjunto(s)" if comprobantes_subidos > 0 else ""
+    flash(f'Deuda de Q{monto:.2f} registrada exitosamente a {vecino.nombre_completo}{msg_comp}.', 'success')
+    if errores_archivos > 0:
+        flash(f'{errores_archivos} archivo(s) no pudieron adjuntarse (formato no permitido o error de carga).', 'warning')
     return redirect(next_url or url_for('deudas.index'))
 
 
@@ -203,12 +233,84 @@ def cambiar_estado(id_deuda):
     return redirect(next_url or url_for('deudas.index'))
 
 
+@deudas_bp.route('/<int:id_deuda>/comprobantes/subir', methods=['POST'])
+@login_required
+@role_required('Administrador', 'Administrador de Colonia', 'Usuario de Consulta')
+def subir_comprobantes(id_deuda):
+    deuda = db.get_or_404(Deuda, id_deuda)
+
+    # Restricción: Residente solo puede subir a sus propias deudas
+    if current_user.rol and current_user.rol.nombre == 'Usuario de Consulta':
+        if not current_user.vecino or deuda.id_vecino != current_user.vecino.id_vecino:
+            abort(403)
+
+    archivos = request.files.getlist('comprobantes')
+    if not archivos or all(not a.filename for a in archivos):
+        flash('Por favor selecciona al menos una imagen de comprobante para adjuntar.', 'warning')
+        return redirect(url_for('deudas.detalle', id_deuda=id_deuda))
+
+    comprobantes_subidos = 0
+    errores_archivos = 0
+
+    for archivo in archivos:
+        if archivo and archivo.filename:
+            if not allowed_image_file(archivo.filename):
+                errores_archivos += 1
+                continue
+            resultado_upload = subir_imagen(archivo, folder='residencial/deudas_comprobantes')
+            if resultado_upload:
+                comprobante = ComprobanteDeuda(
+                    id_deuda=deuda.id_deuda,
+                    url=resultado_upload['url'],
+                    public_id=resultado_upload['public_id'],
+                    nombre_archivo=resultado_upload['nombre_archivo']
+                )
+                db.session.add(comprobante)
+                comprobantes_subidos += 1
+            else:
+                errores_archivos += 1
+
+    if comprobantes_subidos > 0:
+        db.session.commit()
+        flash(f'Se adjuntaron exitosamente {comprobantes_subidos} comprobante(s) de pago.', 'success')
+
+    if errores_archivos > 0:
+        flash(f'{errores_archivos} archivo(s) no pudieron procesarse o tienen un formato no soportado.', 'warning')
+
+    return redirect(url_for('deudas.detalle', id_deuda=id_deuda))
+
+
+@deudas_bp.route('/<int:id_deuda>/comprobantes/<int:id_comprobante>/eliminar', methods=['POST'])
+@login_required
+@role_required('Administrador', 'Administrador de Colonia')
+def eliminar_comprobante(id_deuda, id_comprobante):
+    deuda = db.get_or_404(Deuda, id_deuda)
+    comprobante = db.get_or_404(ComprobanteDeuda, id_comprobante)
+
+    if comprobante.id_deuda != deuda.id_deuda:
+        abort(400)
+
+    if comprobante.public_id:
+        eliminar_imagen(comprobante.public_id)
+
+    db.session.delete(comprobante)
+    db.session.commit()
+
+    flash('Comprobante de pago eliminado exitosamente.', 'info')
+    return redirect(url_for('deudas.detalle', id_deuda=id_deuda))
+
+
 @deudas_bp.route('/<int:id_deuda>/eliminar', methods=['POST'])
 @login_required
 @role_required('Administrador', 'Administrador de Colonia')
 def eliminar(id_deuda):
     deuda = db.get_or_404(Deuda, id_deuda)
     num_deuda = deuda.id_deuda
+
+    # Limpiar comprobantes de Cloudinary asociados a esta deuda
+    for comp in deuda.comprobantes:
+        if comp.public_id:
+            eliminar_imagen(comp.public_id)
 
     db.session.delete(deuda)
     db.session.commit()

@@ -3,9 +3,11 @@ from decimal import Decimal
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort
 from flask_login import login_required, current_user
 from app import db
-from app.models.finanzas import Multa
+from app.models.finanzas import Multa, EvidenciaMulta
 from app.models.residencia import Vecino
 from app.utils.decorators import role_required
+from app.services.cloudinary_service import subir_imagen, eliminar_imagen, allowed_image_file
+
 
 multas_bp = Blueprint('multas', __name__)
 
@@ -123,8 +125,37 @@ def crear():
     db.session.add(nueva_multa)
     db.session.commit()
 
+    # Procesar archivos de evidencia fotográfica si se adjuntaron
+    archivos = request.files.getlist('evidencias')
+    evidencias_subidas = 0
+    errores_archivos = 0
+
+    for archivo in archivos:
+        if archivo and archivo.filename:
+            if not allowed_image_file(archivo.filename):
+                errores_archivos += 1
+                continue
+            resultado_upload = subir_imagen(archivo, folder='residencial/multas')
+            if resultado_upload:
+                evidencia = EvidenciaMulta(
+                    id_multa=nueva_multa.id_multa,
+                    url=resultado_upload['url'],
+                    public_id=resultado_upload['public_id'],
+                    nombre_archivo=resultado_upload['nombre_archivo']
+                )
+                db.session.add(evidencia)
+                evidencias_subidas += 1
+            else:
+                errores_archivos += 1
+
+    if evidencias_subidas > 0:
+        db.session.commit()
+
     vecino = db.session.get(Vecino, int(id_vecino))
-    flash(f'Multa de Q{monto:.2f} aplicada exitosamente a {vecino.nombre_completo}.', 'success')
+    msg_evidencias = f" con {evidencias_subidas} evidencia(s) adjunta(s)" if evidencias_subidas > 0 else ""
+    flash(f'Multa de Q{monto:.2f} aplicada exitosamente a {vecino.nombre_completo}{msg_evidencias}.', 'success')
+    if errores_archivos > 0:
+        flash(f'{errores_archivos} archivo(s) no pudieron adjuntarse (formato no permitido o error de carga).', 'warning')
     return redirect(next_url or url_for('multas.index'))
 
 
@@ -203,12 +234,80 @@ def cambiar_estado(id_multa):
     return redirect(next_url or url_for('multas.index'))
 
 
+@multas_bp.route('/<int:id_multa>/evidencias/subir', methods=['POST'])
+@login_required
+@role_required('Administrador', 'Administrador de Colonia')
+def subir_evidencias(id_multa):
+    multa = db.get_or_404(Multa, id_multa)
+    archivos = request.files.getlist('evidencias')
+
+    if not archivos or all(not a.filename for a in archivos):
+        flash('Por favor selecciona al menos una imagen para adjuntar.', 'warning')
+        return redirect(url_for('multas.detalle', id_multa=id_multa))
+
+    evidencias_subidas = 0
+    errores_archivos = 0
+
+    for archivo in archivos:
+        if archivo and archivo.filename:
+            if not allowed_image_file(archivo.filename):
+                errores_archivos += 1
+                continue
+            resultado_upload = subir_imagen(archivo, folder='residencial/multas')
+            if resultado_upload:
+                evidencia = EvidenciaMulta(
+                    id_multa=multa.id_multa,
+                    url=resultado_upload['url'],
+                    public_id=resultado_upload['public_id'],
+                    nombre_archivo=resultado_upload['nombre_archivo']
+                )
+                db.session.add(evidencia)
+                evidencias_subidas += 1
+            else:
+                errores_archivos += 1
+
+    if evidencias_subidas > 0:
+        db.session.commit()
+        flash(f'Se adjuntaron exitosamente {evidencias_subidas} nueva(s) evidencia(s) fotográfica(s).', 'success')
+
+    if errores_archivos > 0:
+        flash(f'{errores_archivos} imagen(es) no pudieron procesarse o tienen un formato no soportado.', 'warning')
+
+    return redirect(url_for('multas.detalle', id_multa=id_multa))
+
+
+@multas_bp.route('/<int:id_multa>/evidencias/<int:id_evidencia>/eliminar', methods=['POST'])
+@login_required
+@role_required('Administrador', 'Administrador de Colonia')
+def eliminar_evidencia(id_multa, id_evidencia):
+    multa = db.get_or_404(Multa, id_multa)
+    evidencia = db.get_or_404(EvidenciaMulta, id_evidencia)
+
+    if evidencia.id_multa != multa.id_multa:
+        abort(400)
+
+    # Eliminar imagen de Cloudinary si tiene public_id
+    if evidencia.public_id:
+        eliminar_imagen(evidencia.public_id)
+
+    db.session.delete(evidencia)
+    db.session.commit()
+
+    flash('Evidencia fotográfica eliminada exitosamente.', 'info')
+    return redirect(url_for('multas.detalle', id_multa=id_multa))
+
+
 @multas_bp.route('/<int:id_multa>/eliminar', methods=['POST'])
 @login_required
 @role_required('Administrador', 'Administrador de Colonia')
 def eliminar(id_multa):
     multa = db.get_or_404(Multa, id_multa)
     num_multa = multa.id_multa
+
+    # Limpiar evidencias de Cloudinary asociadas a esta multa
+    for evidencia in multa.evidencias:
+        if evidencia.public_id:
+            eliminar_imagen(evidencia.public_id)
 
     db.session.delete(multa)
     db.session.commit()

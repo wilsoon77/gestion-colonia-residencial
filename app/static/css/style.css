@@ -1312,3 +1312,50 @@ h1, h2, h3, h4, h5, h6 {
     }
 }
 
+/* ==========================================================================
+   COMPONENTES INTERACTIVOS: MULTI-IMAGE UPLOADER & RESIDENT SEARCH PICKER
+   ========================================================================== */
+.multi-dropzone {
+    border-style: dashed !important;
+    border-color: #cbd5e1 !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.multi-dropzone:hover {
+    border-color: var(--brand-forest) !important;
+    background-color: rgba(22, 53, 39, 0.04) !important;
+}
+
+.group-evidence-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: var(--radius-md) !important;
+}
+
+.group-evidence-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md) !important;
+}
+
+.transition-transform {
+    transition: transform 0.3s ease;
+}
+
+.group-evidence-card:hover .transition-transform {
+    transform: scale(1.05);
+}
+
+.resident-search-results {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid rgba(0, 0, 0, 0.12) !important;
+    border-radius: var(--radius-md) !important;
+}
+
+.resident-search-results .list-group-item {
+    transition: background-color 0.15s ease;
+}
+
+.resident-search-results .list-group-item:hover {
+    background-color: #f8fafc !important;
+}
+
+

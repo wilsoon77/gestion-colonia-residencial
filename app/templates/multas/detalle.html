@@ -12,6 +12,9 @@
     </div>
     {% if current_user.rol and current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] %}
     <div class="d-flex gap-2">
+        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalSubirEvidencias">
+            <i class="bi bi-cloud-arrow-up-fill me-1"></i>Adjuntar Fotos
+        </button>
         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalEditarMulta">
             <i class="bi bi-pencil-square me-1"></i>Editar
         </button>
@@ -22,10 +25,10 @@
     {% endif %}
 </div>
 
-<div class="row g-4">
+<div class="row g-4 mb-4">
     <!-- Información de la Multa -->
     <div class="col-md-6">
-        <div class="card shadow-sm border-0 mb-4">
+        <div class="card shadow-sm border-0 h-100">
             <div class="card-header bg-white py-3">
                 <h5 class="mb-0 fw-semibold text-secondary"><i class="bi bi-info-circle me-2"></i>Detalle de la Sanción</h5>
             </div>
@@ -106,7 +109,7 @@
 
     <!-- Información del Residente Infractor -->
     <div class="col-md-6">
-        <div class="card shadow-sm border-0 mb-4">
+        <div class="card shadow-sm border-0 h-100">
             <div class="card-header bg-white py-3">
                 <h5 class="mb-0 fw-semibold text-secondary"><i class="bi bi-person-vcard me-2"></i>Residente Infractor</h5>
             </div>
@@ -138,7 +141,7 @@
                     </li>
                 </ul>
 
-                <div class="mt-3 text-end">
+                <div class="mt-4 text-end">
                     <a href="{{ url_for('vecinos.detalle', id_vecino=multa.vecino.id_vecino) }}" class="btn btn-sm btn-outline-primary">
                         <i class="bi bi-person-lines-fill me-1"></i>Ver Ficha del Residente
                     </a>
@@ -148,7 +151,173 @@
     </div>
 </div>
 
+<!-- ==========================================================================
+     SECCIÓN DE EVIDENCIAS FOTOGRÁFICAS (CLOUDINARY)
+     ========================================================================== -->
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-white py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <div class="d-flex align-items-center gap-2">
+            <h5 class="mb-0 fw-semibold text-secondary">
+                <i class="bi bi-images me-2 text-primary"></i>Evidencias Fotográficas de la Infracción
+            </h5>
+            <span class="badge {% if multa.evidencias %}bg-primary-subtle text-primary border border-primary-subtle{% else %}bg-light text-muted border{% endif %}">
+                {{ multa.evidencias|length }} foto(s)
+            </span>
+        </div>
+        {% if current_user.rol and current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] %}
+        <button type="button" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1 shadow-xs" data-bs-toggle="modal" data-bs-target="#modalSubirEvidencias">
+            <i class="bi bi-cloud-arrow-up-fill"></i>
+            <span>Adjuntar Evidencias</span>
+        </button>
+        {% endif %}
+    </div>
+    <div class="card-body p-4">
+        {% if not multa.evidencias %}
+            <div class="text-center py-5">
+                <div class="mb-3">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-light border p-3 text-secondary opacity-75" style="width: 70px; height: 70px;">
+                        <i class="bi bi-camera fs-2"></i>
+                    </div>
+                </div>
+                <h6 class="fw-semibold text-dark mb-1">Sin Evidencias Fotográficas</h6>
+                <p class="text-muted small mb-3">Esta sanción no cuenta con imágenes o fotografías de respaldo adjuntas.</p>
+                {% if current_user.rol and current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] %}
+                <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalSubirEvidencias">
+                    <i class="bi bi-plus-circle me-1"></i>Adjuntar Fotos Ahora
+                </button>
+                {% endif %}
+            </div>
+        {% else %}
+            <div class="row g-3">
+                {% for ev in multa.evidencias %}
+                <div class="col-sm-6 col-md-4 col-lg-3">
+                    <div class="card h-100 border border-light-subtle rounded-3 overflow-hidden shadow-xs">
+                        <!-- Miniatura con botón para ampliar -->
+                        <div class="position-relative bg-dark d-flex align-items-center justify-content-center" style="height: 190px; overflow: hidden; cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modalVerFoto_{{ ev.id_evidencia }}">
+                            <img src="{{ ev.url }}" alt="{{ ev.nombre_archivo or 'Evidencia fotográfica' }}" class="w-100 h-100 object-fit-cover" loading="lazy">
+                            <div class="position-absolute top-0 end-0 p-2">
+                                <span class="badge bg-dark bg-opacity-75 text-white" title="Clic para ampliar">
+                                    <i class="bi bi-arrows-fullscreen"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-body p-2 d-flex flex-column justify-content-between bg-white">
+                            <div>
+                                <div class="small fw-semibold text-truncate text-dark" title="{{ ev.nombre_archivo or 'evidencia.jpg' }}">
+                                    <i class="bi bi-file-earmark-image me-1 text-primary"></i>{{ ev.nombre_archivo or 'evidencia.jpg' }}
+                                </div>
+                                <small class="text-muted d-block font-mono-currency" style="font-size: 11px;">
+                                    <i class="bi bi-clock me-1"></i>{{ ev.fecha_subida.strftime('%d/%m/%Y %H:%M') }}
+                                </small>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top">
+                                <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 small" data-bs-toggle="modal" data-bs-target="#modalVerFoto_{{ ev.id_evidencia }}">
+                                    <i class="bi bi-eye me-1"></i>Ampliar
+                                </button>
+                                <div class="d-flex gap-1">
+                                    <a href="{{ ev.url }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-light border py-0 px-2 small text-secondary" title="Abrir imagen original">
+                                        <i class="bi bi-box-arrow-up-right"></i>
+                                    </a>
+                                    {% if current_user.rol and current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] %}
+                                    <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 small" data-bs-toggle="modal" data-bs-target="#modalEliminarEvidencia_{{ ev.id_evidencia }}" title="Eliminar evidencia">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal para Visualizar Foto en Alta Resolución -->
+                <div class="modal fade" id="modalVerFoto_{{ ev.id_evidencia }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                        <div class="modal-content border-0 shadow">
+                            <div class="modal-header bg-dark text-white py-2">
+                                <h6 class="modal-title small text-truncate">
+                                    <i class="bi bi-image me-2 text-warning"></i>{{ ev.nombre_archivo or 'Evidencia fotográfica' }}
+                                </h6>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body p-0 bg-black text-center d-flex align-items-center justify-content-center" style="min-height: 350px; max-height: 75vh; overflow: auto;">
+                                <img src="{{ ev.url }}" alt="{{ ev.nombre_archivo or 'Evidencia' }}" class="img-fluid" style="max-height: 75vh; width: auto; object-fit: contain;">
+                            </div>
+                            <div class="modal-footer bg-light py-2 d-flex justify-content-between align-items-center">
+                                <small class="text-muted font-mono-currency">Subido: {{ ev.fecha_subida.strftime('%d/%m/%Y %H:%M') }}</small>
+                                <div class="d-flex gap-2">
+                                    <a href="{{ ev.url }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-primary">
+                                        <i class="bi bi-box-arrow-up-right me-1"></i>Abrir en nueva pestaña
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% if current_user.rol and current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] %}
+                <!-- Modal para Eliminar Evidencia Individual -->
+                <div class="modal fade" id="modalEliminarEvidencia_{{ ev.id_evidencia }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <form method="POST" action="{{ url_for('multas.eliminar_evidencia', id_multa=multa.id_multa, id_evidencia=ev.id_evidencia) }}">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <div class="modal-header bg-danger text-white">
+                                    <h5 class="modal-title fw-bold"><i class="bi bi-trash3-fill me-2"></i>Eliminar Evidencia</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>¿Estás seguro de que deseas eliminar esta evidencia fotográfica?</p>
+                                    <div class="d-flex align-items-center gap-3 p-2 bg-light rounded border">
+                                        <img src="{{ ev.url }}" alt="Thumbnail" class="rounded object-fit-cover" style="width: 60px; height: 60px;">
+                                        <div class="min-w-0">
+                                            <div class="fw-semibold text-truncate small">{{ ev.nombre_archivo or 'evidencia.jpg' }}</div>
+                                            <small class="text-muted">{{ ev.fecha_subida.strftime('%d/%m/%Y %H:%M') }}</small>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted d-block mt-2">Esta acción borrará la imagen de forma permanente del almacenamiento en la nube.</small>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="submit" class="btn btn-danger"><i class="bi bi-trash3-fill me-1"></i>Eliminar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
 {% if current_user.rol and current_user.rol.nombre in ['Administrador', 'Administrador de Colonia'] %}
+<!-- Modal Adjuntar Más Evidencias -->
+<div class="modal fade" id="modalSubirEvidencias" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('multas.subir_evidencias', id_multa=multa.id_multa) }}" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-cloud-arrow-up-fill text-primary me-2"></i>Adjuntar Evidencias Fotográficas</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Seleccionar Fotografías <span class="text-danger">*</span></label>
+                        <div data-multi-image-uploader="true" data-input-name="evidencias"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-upload me-1"></i>Subir Evidencias</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- Modal Editar Multa -->
 <div class="modal fade" id="modalEditarMulta" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
@@ -162,9 +331,16 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Residente Infractor <span class="text-danger">*</span></label>
-                        <select class="form-select" name="id_vecino" required>
+                        <select class="form-select searchable-resident-select" name="id_vecino" required>
                             {% for v in vecinos %}
-                            <option value="{{ v.id_vecino }}" {% if v.id_vecino == multa.id_vecino %}selected{% endif %}>
+                            <option value="{{ v.id_vecino }}"
+                                    data-nombre="{{ v.nombre_completo }}"
+                                    data-casa="{% if v.casa %}Casa #{{ v.casa.numero_casa }}{% if v.casa.calle_avenida %} - {{ v.casa.calle_avenida }}{% endif %}{% endif %}"
+                                    data-dpi="{{ v.dpi or '' }}"
+                                    data-telefono="{{ v.telefono or '' }}"
+                                    data-correo="{{ v.correo or '' }}"
+                                    data-familia="{% if v.familia %}{{ v.familia.nombre }}{% endif %}"
+                                    {% if v.id_vecino == multa.id_vecino %}selected{% endif %}>
                                 {{ v.nombre_completo }} {% if v.casa %}(Casa #{{ v.casa.numero_casa }}){% endif %}
                             </option>
                             {% endfor %}
