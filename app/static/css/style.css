@@ -1358,4 +1358,138 @@ h1, h2, h3, h4, h5, h6 {
     background-color: #f8fafc !important;
 }
 
+/* ==========================================================================
+   ANIMACIONES FLUIDAS: HERO SECTION (PAGE LOAD ENTRANCE)
+   ========================================================================== */
+@keyframes heroFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(26px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes heroFadeDown {
+    from {
+        opacity: 0;
+        transform: translateY(-18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero-animate-up {
+    opacity: 0;
+    animation: heroFadeUp 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    will-change: opacity, transform;
+}
+
+.hero-animate-down {
+    opacity: 0;
+    animation: heroFadeDown 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    will-change: opacity, transform;
+}
+
+.hero-delay-1 { animation-delay: 0.15s; }
+.hero-delay-2 { animation-delay: 0.28s; }
+.hero-delay-3 { animation-delay: 0.42s; }
+.hero-delay-4 { animation-delay: 0.58s; }
+
+/* ==========================================================================
+   SISTEMA DE ANIMACIONES CON SCROLL (SCROLL REVEAL FLUIDO)
+   ========================================================================== */
+.scroll-reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition-property: opacity, transform;
+    transition-duration: 0.76s;
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: var(--reveal-delay, 0s);
+    will-change: opacity, transform;
+    backface-visibility: hidden;
+}
+
+/* Modificadores de Dirección */
+.scroll-reveal.scroll-reveal-left {
+    transform: translateX(-36px);
+}
+
+.scroll-reveal.scroll-reveal-right {
+    transform: translateX(36px);
+}
+
+.scroll-reveal.scroll-reveal-scale {
+    transform: scale(0.94);
+}
+
+.scroll-reveal.scroll-reveal-fade {
+    transform: none;
+}
+
+/* Estado Revelado */
+.scroll-reveal.is-revealed {
+    opacity: 1 !important;
+    transform: translateY(0) translateX(0) scale(1) !important;
+}
+
+/* Stagger fallback nativo en CSS para grupos */
+.scroll-stagger-group > .scroll-reveal:nth-child(1) { --reveal-delay: 0.04s; }
+.scroll-stagger-group > .scroll-reveal:nth-child(2) { --reveal-delay: 0.16s; }
+.scroll-stagger-group > .scroll-reveal:nth-child(3) { --reveal-delay: 0.28s; }
+.scroll-stagger-group > .scroll-reveal:nth-child(4) { --reveal-delay: 0.40s; }
+.scroll-stagger-group > .scroll-reveal:nth-child(5) { --reveal-delay: 0.52s; }
+.scroll-stagger-group > .scroll-reveal:nth-child(6) { --reveal-delay: 0.64s; }
+
+/* Revelación de línea dorada decorativa */
+.editorial-gold-rule.scroll-gold-rule {
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: var(--reveal-delay, 0.12s);
+}
+
+.editorial-gold-rule.scroll-gold-rule.is-revealed {
+    transform: scaleX(1);
+}
+
+/* Efecto suave en imágenes de cards */
+.bento-card-media {
+    overflow: hidden;
+}
+
+.bento-card-media img {
+    transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bento-card.scroll-reveal:not(.is-revealed) .bento-card-media img {
+    transform: scale(1.06);
+}
+
+.bento-card.scroll-reveal.is-revealed .bento-card-media img {
+    transform: scale(1);
+}
+
+.bento-card.scroll-reveal.is-revealed:hover .bento-card-media img {
+    transform: scale(1.04);
+}
+
+/* Elevación dinámica del navbar al hacer scroll */
+.landing-navbar.is-scrolled {
+    background: rgba(11, 28, 20, 0.96) !important;
+    box-shadow: 0 14px 38px -8px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(194, 142, 58, 0.35) !important;
+    border-color: rgba(194, 142, 58, 0.4) !important;
+}
+
+/* Enlaces de navbar activos */
+.landing-nav-link.active {
+    color: #FFFFFF !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+}
+
+
 

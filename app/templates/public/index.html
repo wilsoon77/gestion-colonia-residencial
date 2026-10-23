@@ -11,7 +11,7 @@
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <!-- Custom Design System CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=2.2">
 </head>
 <body>
 
@@ -169,7 +169,7 @@
             <div class="row align-items-center">
                 <div class="col-lg-9 col-xl-8">
                     <!-- Ubicación Integrada (Editorial / Arquitectónica) -->
-                    <div class="hero-location-bar">
+                    <div class="hero-location-bar hero-animate-down">
                         <span class="hero-location-tag">Ubicación Estratégica</span>
                         <span class="hero-location-divider">/</span>
                         <span class="hero-location-text">
@@ -180,17 +180,17 @@
                     </div>
 
                     <!-- Titular de Autor -->
-                    <h1 class="hero-heading">
+                    <h1 class="hero-heading hero-animate-up hero-delay-1">
                         Donde el bosque de encinos y la exclusividad convergen.
                     </h1>
 
                     <!-- Bajada Editorial -->
-                    <p class="hero-lead">
+                    <p class="hero-lead hero-animate-up hero-delay-2">
                         Una comunidad residencial privada de baja densidad, con arquitectura contemporánea, pozo propio de agua, seguridad blindada 24/7 y más de 20,000 m² de reserva boscosa en el clima de montaña de Fraijanes.
                     </p>
 
                     <!-- Botones de Acción -->
-                    <div class="d-flex flex-wrap gap-3 mb-5">
+                    <div class="d-flex flex-wrap gap-3 mb-5 hero-animate-up hero-delay-3">
                         <a href="#contacto" class="btn btn-encinas btn-encinas-gold">
                             <i class="bi bi-calendar2-check-fill me-1"></i>Agendar Visita Guiada
                         </a>
@@ -208,7 +208,7 @@
             </div>
 
             <!-- Fila de Estadísticas Rápidas con Altura Uniforme y Responsiva -->
-            <div class="hero-stats-grid">
+            <div class="hero-stats-grid hero-animate-up hero-delay-4">
                 <div class="hero-stat-card">
                     <div class="hero-stat-icon">
                         <i class="bi bi-droplet-half"></i>
@@ -272,19 +272,19 @@
     <section id="amenidades" class="py-5 my-md-5">
         <div class="container-xl">
             <!-- Cabecera Editorial (Sin burbujas AI) -->
-            <div class="editorial-header-center">
+            <div class="editorial-header-center scroll-reveal scroll-reveal-up">
                 <div class="editorial-kicker editorial-kicker-center">01 · Masterplan & Entorno Natural</div>
                 <h2 class="editorial-title">Amenidades concebidas para el bienestar de tu familia</h2>
-                <div class="editorial-gold-rule"></div>
+                <div class="editorial-gold-rule scroll-reveal scroll-gold-rule"></div>
                 <p class="editorial-desc">
                     Espacios creados para desconectarse del ritmo de la ciudad y disfrutar de la naturaleza, el deporte de alta competencia y la convivencia en comunidad.
                 </p>
             </div>
 
             <!-- Bento Grid 12 Columnas Responsivo -->
-            <div class="bento-grid">
+            <div class="bento-grid scroll-stagger-group">
                 <!-- Bento Item 1: Casa Club (7 Cols) -->
-                <div class="bento-card bento-col-7">
+                <div class="bento-card bento-col-7 scroll-reveal scroll-reveal-up">
                     <div class="bento-card-media">
                         <img src="{{ url_for('static', filename='img/clubhouse.jpg') }}" alt="Casa Club Los Encinos y Piscina Climatizada">
                         <div class="bento-overlay-gradient"></div>
@@ -315,7 +315,7 @@
                 </div>
 
                 <!-- Bento Item 2: Seguridad 24/7 (5 Cols) con Ancla #seguridad -->
-                <div id="seguridad" class="bento-card bento-col-5">
+                <div id="seguridad" class="bento-card bento-col-5 scroll-reveal scroll-reveal-up">
                     <div class="bento-card-media">
                         <img src="{{ url_for('static', filename='img/garita.jpg') }}" alt="Garita Blindada y Control de Acceso 24/7">
                         <div class="bento-overlay-gradient"></div>
@@ -336,7 +336,7 @@
                 </div>
 
                 <!-- Bento Item 3: Reserva Boscosa y Senderos (5 Cols) -->
-                <div class="bento-card bento-col-5">
+                <div class="bento-card bento-col-5 scroll-reveal scroll-reveal-up">
                     <div class="bento-card-media">
                         <img src="{{ url_for('static', filename='img/parque.jpg') }}" alt="Senderos y Parque Ecológico">
                         <div class="bento-overlay-gradient"></div>
@@ -357,7 +357,7 @@
                 </div>
 
                 <!-- Bento Item 4: Canchas y Deportes (7 Cols) -->
-                <div class="bento-card bento-col-7 d-flex flex-column justify-content-between p-4 bg-white">
+                <div class="bento-card bento-col-7 scroll-reveal scroll-reveal-up d-flex flex-column justify-content-between p-4 bg-white">
                     <div>
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <div class="text-uppercase small fw-bold font-mono-currency text-secondary" style="letter-spacing: 0.12em; font-size: 11px;">
@@ -396,12 +396,12 @@
     <section id="sectores" class="py-5 bg-white border-top border-bottom">
         <div class="container-xl">
             <div class="row align-items-end mb-5">
-                <div class="col-lg-8">
+                <div class="col-lg-8 scroll-reveal scroll-reveal-left">
                     <div class="editorial-kicker">02 · Lotificación & Topografía</div>
                     <h2 class="editorial-title mb-2">Distribución por Sectores Residenciales</h2>
                     <p class="text-muted mb-0">Cada sector fue planificado respetando la topografía natural y la vista panorámica a la cordillera.</p>
                 </div>
-                <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                <div class="col-lg-4 text-lg-end mt-3 mt-lg-0 scroll-reveal scroll-reveal-right">
                     <div class="d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill bg-light border">
                         <span class="text-success fw-bold font-mono-currency">{{ total_casas }}</span>
                         <span class="text-muted small">Viviendas registradas en el sistema</span>
@@ -409,9 +409,9 @@
                 </div>
             </div>
 
-            <div class="row g-4">
+            <div class="row g-4 scroll-stagger-group">
                 <!-- Sector 1 -->
-                <div class="col-md-4">
+                <div class="col-md-4 scroll-reveal scroll-reveal-up">
                     <div class="sector-card h-100">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 rounded-pill fw-bold">Manzanas A y B</span>
@@ -428,7 +428,7 @@
                 </div>
 
                 <!-- Sector 2 -->
-                <div class="col-md-4">
+                <div class="col-md-4 scroll-reveal scroll-reveal-up">
                     <div class="sector-card h-100">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1 rounded-pill fw-bold">Manzanas C y D</span>
@@ -445,7 +445,7 @@
                 </div>
 
                 <!-- Sector 3 -->
-                <div class="col-md-4">
+                <div class="col-md-4 scroll-reveal scroll-reveal-up">
                     <div class="sector-card h-100">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-1 rounded-pill fw-bold">Manzanas E y F</span>
@@ -469,9 +469,9 @@
          ========================================================================== -->
     <section id="portal" class="py-5 my-md-4">
         <div class="container-xl">
-            <div class="portal-spotlight-box p-4 p-md-5">
+            <div class="portal-spotlight-box p-4 p-md-5 scroll-reveal scroll-reveal-scale">
                 <div class="row align-items-center g-5">
-                    <div class="col-lg-6">
+                    <div class="col-lg-6 scroll-reveal scroll-reveal-left">
                         <div class="editorial-kicker mb-2" style="color: var(--brand-gold);">
                             03 · Plataforma Web & Transparencia
                         </div>
@@ -483,33 +483,35 @@
                         </p>
 
                         <!-- Bullets de Características -->
-                        <div class="portal-feature-item">
-                            <div class="portal-icon-bullet">
-                                <i class="bi bi-cash-stack fs-5"></i>
+                        <div class="d-flex flex-column gap-3 scroll-stagger-group">
+                            <div class="portal-feature-item scroll-reveal scroll-reveal-left">
+                                <div class="portal-icon-bullet">
+                                    <i class="bi bi-cash-stack fs-5"></i>
+                                </div>
+                                <div>
+                                    <h5 class="fw-bold text-white mb-1">Estado de Deudas y Cuotas al Día</h5>
+                                    <p class="text-white-50 small mb-0">Monitorea tus cuotas mensuales en Quetzales (Q), historial de cobros cancelados y saldos pendientes en tiempo real.</p>
+                                </div>
                             </div>
-                            <div>
-                                <h5 class="fw-bold text-white mb-1">Estado de Deudas y Cuotas al Día</h5>
-                                <p class="text-white-50 small mb-0">Monitorea tus cuotas mensuales en Quetzales (Q), historial de cobros cancelados y saldos pendientes en tiempo real.</p>
-                            </div>
-                        </div>
 
-                        <div class="portal-feature-item">
-                            <div class="portal-icon-bullet">
-                                <i class="bi bi-shield-exclamation fs-5"></i>
+                            <div class="portal-feature-item scroll-reveal scroll-reveal-left">
+                                <div class="portal-icon-bullet">
+                                    <i class="bi bi-shield-exclamation fs-5"></i>
+                                </div>
+                                <div>
+                                    <h5 class="fw-bold text-white mb-1">Registro Transparente de Sanciones</h5>
+                                    <p class="text-white-50 small mb-0">Notificación clara y documentada de multas según el reglamento interno de convivencia comunitaria.</p>
+                                </div>
                             </div>
-                            <div>
-                                <h5 class="fw-bold text-white mb-1">Registro Transparente de Sanciones</h5>
-                                <p class="text-white-50 small mb-0">Notificación clara y documentada de multas según el reglamento interno de convivencia comunitaria.</p>
-                            </div>
-                        </div>
 
-                        <div class="portal-feature-item">
-                            <div class="portal-icon-bullet">
-                                <i class="bi bi-people-fill fs-5"></i>
-                            </div>
-                            <div>
-                                <h5 class="fw-bold text-white mb-1">Padrón de Residencia y Familia</h5>
-                                <p class="text-white-50 small mb-0">Gestión de integrantes por vivienda, parentescos acreditados y contacto de emergencia para garita.</p>
+                            <div class="portal-feature-item scroll-reveal scroll-reveal-left">
+                                <div class="portal-icon-bullet">
+                                    <i class="bi bi-people-fill fs-5"></i>
+                                </div>
+                                <div>
+                                    <h5 class="fw-bold text-white mb-1">Padrón de Residencia y Familia</h5>
+                                    <p class="text-white-50 small mb-0">Gestión de integrantes por vivienda, parentescos acreditados y contacto de emergencia para garita.</p>
+                                </div>
                             </div>
                         </div>
 
@@ -527,7 +529,7 @@
                     </div>
 
                     <!-- Mockup Visual del Portal -->
-                    <div class="col-lg-6">
+                    <div class="col-lg-6 scroll-reveal scroll-reveal-right">
                         <div class="bg-white rounded-4 p-4 shadow-lg text-dark">
                             <div class="d-flex justify-content-between align-items-center pb-3 border-bottom mb-3">
                                 <div class="d-flex align-items-center gap-2">
@@ -593,38 +595,38 @@
     <section id="reglamento" class="py-5 bg-white border-top border-bottom">
         <div class="container-xl">
             <!-- Cabecera Editorial (Sin burbujas AI) -->
-            <div class="editorial-header-center">
+            <div class="editorial-header-center scroll-reveal scroll-reveal-up">
                 <div class="editorial-kicker editorial-kicker-center">04 · Convivencia & Normativa Interna</div>
                 <h2 class="editorial-title">Reglamento de Convivencia y Armonía (ASOVEC)</h2>
-                <div class="editorial-gold-rule"></div>
+                <div class="editorial-gold-rule scroll-reveal scroll-gold-rule"></div>
                 <p class="editorial-desc">
                     El orden y la plusvalía de Residencial Las Encinas se preservan gracias a un marco de normativas claras acordadas democráticamente por la Asociación de Vecinos.
                 </p>
             </div>
 
-            <div class="row g-4">
-                <div class="col-md-6 col-lg-3">
+            <div class="row g-4 scroll-stagger-group">
+                <div class="col-md-6 col-lg-3 scroll-reveal scroll-reveal-up">
                     <div class="p-4 rounded-4 bg-light border h-100">
                         <div class="text-success fs-2 mb-2"><i class="bi bi-speedometer"></i></div>
                         <h5 class="fw-bold mb-2">Velocidad Máxima 20 km/h</h5>
                         <p class="text-muted small mb-0">Prioridad absoluta al peatón, niños en bicicleta y mascotas en todas las calles y avenidas.</p>
                     </div>
                 </div>
-                <div class="col-md-6 col-lg-3">
+                <div class="col-md-6 col-lg-3 scroll-reveal scroll-reveal-up">
                     <div class="p-4 rounded-4 bg-light border h-100">
                         <div class="text-primary fs-2 mb-2"><i class="bi bi-volume-mute-fill"></i></div>
                         <h5 class="fw-bold mb-2">Horarios de Silencio</h5>
                         <p class="text-muted small mb-0">Restricción de ruidos y música alta a partir de las 22:00 hrs de domingo a jueves y 00:00 hrs en fines de semana.</p>
                     </div>
                 </div>
-                <div class="col-md-6 col-lg-3">
+                <div class="col-md-6 col-lg-3 scroll-reveal scroll-reveal-up">
                     <div class="p-4 rounded-4 bg-light border h-100">
                         <div class="text-warning fs-2 mb-2"><i class="bi bi-trash3-fill"></i></div>
                         <h5 class="fw-bold mb-2">Manejo de Desechos</h5>
                         <p class="text-muted small mb-0">Recolección programada 3 veces por semana con clasificación obligatoria de orgánicos y reciclaje.</p>
                     </div>
                 </div>
-                <div class="col-md-6 col-lg-3">
+                <div class="col-md-6 col-lg-3 scroll-reveal scroll-reveal-up">
                     <div class="p-4 rounded-4 bg-light border h-100">
                         <div class="text-info fs-2 mb-2"><i class="bi bi-paint-bucket"></i></div>
                         <h5 class="fw-bold mb-2">Manual de Fachadas</h5>
@@ -642,15 +644,15 @@
         <div class="container-xl">
             <div class="row g-5 align-items-center">
                 <!-- Información Institucional -->
-                <div class="col-lg-5">
+                <div class="col-lg-5 scroll-reveal scroll-reveal-left">
                     <div class="editorial-kicker mb-2">05 · Visitas & Atención Personalizada</div>
                     <h2 class="editorial-title mb-3">Conoce Residencial Las Encinas en persona</h2>
                     <p class="text-muted mb-4">
                         Agenda un recorrido privado con nuestro equipo administrativo para conocer la Casa Club, los senderos boscosos y las opciones de lotes y viviendas disponibles.
                     </p>
 
-                    <div class="d-flex flex-column gap-3 mb-4">
-                        <div class="d-flex align-items-center gap-3">
+                    <div class="d-flex flex-column gap-3 mb-4 scroll-stagger-group">
+                        <div class="d-flex align-items-center gap-3 scroll-reveal scroll-reveal-left">
                             <div class="p-3 bg-white border rounded-circle text-primary">
                                 <i class="bi bi-geo-alt-fill fs-5"></i>
                             </div>
@@ -660,7 +662,7 @@
                             </div>
                         </div>
 
-                        <div class="d-flex align-items-center gap-3">
+                        <div class="d-flex align-items-center gap-3 scroll-reveal scroll-reveal-left">
                             <div class="p-3 bg-white border rounded-circle text-primary">
                                 <i class="bi bi-telephone-fill fs-5"></i>
                             </div>
@@ -670,7 +672,7 @@
                             </div>
                         </div>
 
-                        <div class="d-flex align-items-center gap-3">
+                        <div class="d-flex align-items-center gap-3 scroll-reveal scroll-reveal-left">
                             <div class="p-3 bg-white border rounded-circle text-primary">
                                 <i class="bi bi-envelope-fill fs-5"></i>
                             </div>
@@ -683,7 +685,7 @@
                 </div>
 
                 <!-- Formulario -->
-                <div class="col-lg-7">
+                <div class="col-lg-7 scroll-reveal scroll-reveal-right">
                     <div class="card-encinas p-4 p-md-5">
                         <h4 class="fw-bold mb-3">Solicitar Información o Agendar Visita</h4>
                         <p class="text-muted small mb-4">Completa tus datos y la administración se pondrá en contacto contigo en menos de 24 horas.</p>
@@ -792,5 +794,7 @@
 
     <!-- Bootstrap 5.3 Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Script de Animaciones Scroll & Navegación Fluida -->
+    <script src="{{ url_for('static', filename='js/landing_scroll.js') }}?v=2.2"></script>
 </body>
 </html>
